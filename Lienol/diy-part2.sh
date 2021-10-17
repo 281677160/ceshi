@@ -16,12 +16,6 @@ sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/M
 sed -i "s/OpenWrt /281677160 compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ           # 增加个性名字 281677160
 
 
-if [[ "${TARGET_BOARD}" == "x86" ]]; then
-	curl -fsSL  https://raw.githubusercontent.com/281677160/common/main/Custom/DRM-I915 > target/linux/x86/DRM-I915
-	for X in $(ls -1 target/linux/x86 | grep "config-"); do echo -e "\n$(cat target/linux/x86/DRM-I915)" >> target/linux/x86/${X}; done
-fi
-
-
 # 修改插件名字
 sed -i 's/"aMule设置"/"电驴下载"/g' `grep "aMule设置" -rl ./`
 sed -i 's/"网络存储"/"NAS"/g' `grep "网络存储" -rl ./`
