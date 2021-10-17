@@ -9,6 +9,3 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
-git clone https://github.com/wiwizcom/WiFiPortal.git
-cp -r WiFiPortal/eqos-master-wiwiz package/
-cp -r WiFiPortal/wifidog-wiwiz package/
