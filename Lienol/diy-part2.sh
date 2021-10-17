@@ -26,19 +26,6 @@ fi
 exit 0
 ' >> ${Home}/package/base-files/files/etc/rc.local
 
-if [[ "${TARGET_BOARD}" == "x86" ]]; then
-	cp -Rf "${Home}"/build/common/Custom/DRM-I915 target/linux/x86/DRM-I915
-	for X in $(ls -1 target/linux/x86 | grep "config-"); do echo -e "\n$(cat target/linux/x86/DRM-I915)" >> target/linux/x86/${X}; done
-fi
-
-if [[ `grep -c "CONFIG_PACKAGE_ntfs-3g=y" ${Home}/.config` -eq '1' ]]; then
-	mkdir -p files/etc/hotplug.d/block && curl -fsSL  https://raw.githubusercontent.com/281677160/openwrt-package/usb/block/10-mount > files/etc/hotplug.d/block/10-mount
-fi
-
-
-find . -name 'README' -o -name 'README.md' | xargs -i rm -rf {}
-find . -name 'CONTRIBUTED.md' -o -name 'README_EN.md' -o -name 'DEVICE_NAME' | xargs -i rm -rf {}
-
 
 # 修改插件名字
 sed -i 's/"aMule设置"/"电驴下载"/g' `grep "aMule设置" -rl ./`
