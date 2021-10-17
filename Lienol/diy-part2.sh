@@ -17,7 +17,7 @@ sed -i "s/OpenWrt /281677160 compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt 
 
 
 if [[ "${TARGET_BOARD}" == "x86" ]]; then
-	cp -Rf "${Home}"/build/common/Custom/DRM-I915 target/linux/x86/DRM-I915
+	curl -fsSL  https://raw.githubusercontent.com/281677160/common/main/Custom/DRM-I915 > target/linux/x86/DRM-I915
 	for X in $(ls -1 target/linux/x86 | grep "config-"); do echo -e "\n$(cat target/linux/x86/DRM-I915)" >> target/linux/x86/${X}; done
 fi
 
