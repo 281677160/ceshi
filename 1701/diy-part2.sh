@@ -15,7 +15,7 @@ sed -i 's/192.168.1.1/192.168.2.2/g' package/base-files/files/bin/config_generat
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile            # 选择argon为默认主题
 sed -i "s/OpenWrt /281677160 compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ           # 增加个性名字 281677160
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                             # 设置密码为空
-
+sed -i 's/PATCHVER:=4.14/PATCHVER:=4.19/g' target/linux/bcm53xx/Makefile
 
 # 修改插件名字
 sed -i 's/"aMule设置"/"电驴下载"/g' `grep "aMule设置" -rl ./`
