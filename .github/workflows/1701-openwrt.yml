@@ -91,7 +91,7 @@ jobs:
 
     - name: 读取自定义文件2
       run: |
-        [ -e 1701/files ] && mv 1701/files openwrt/files
+        mkdir -p openwrt/files && cp -Rf 1701/files/* openwrt/files
         [ -e 1701/diy ] && cp -Rf 1701/diy/* $GITHUB_WORKSPACE/openwrt
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         rm -fr openwrt/files/README
