@@ -9,3 +9,10 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
+
+git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
+svn co https://github.com/immortalwrt/packages/trunk/net/redsocks2  package/redsocks2
+svn co https://github.com/coolsnowwolf/packages/trunk/net/baidupcs-web package/baidupcs-web
+git clone -b packages --depth 1 https://github.com/xiaorouji/openwrt-passwall package/openwrt-passwall
+git clone -b luci --depth 1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
