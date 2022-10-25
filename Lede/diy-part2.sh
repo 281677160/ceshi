@@ -11,8 +11,7 @@
 
 # Modify default IP
 sed -i 's/192.168.1.1/192.168.2.2/g' package/base-files/files/bin/config_generate                  # 修改后台IP地址
+
 pushd feeds/packages/lang
-
 rm -rf golang && svn co https://github.com/openwrt/packages/branches/openwrt-22.03/lang/golang
-
 popd
