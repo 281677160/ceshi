@@ -28,6 +28,8 @@ on:
 env:
   REPO_URL: https://github.com/istoreos/istoreos
   REPO_BRANCH: istoreos-21.02
+  DIY_DIY: Lede/diy
+  DIY_FILES: Lede/files
   FEEDS_CONF: Lede/feeds.conf.default
   CONFIG_FILE: Lede/.config
   DIY_P1_SH: Lede/diy-part1.sh
@@ -72,26 +74,24 @@ jobs:
 
     - name: 读取自定义文件1
       run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
         cd openwrt
+        [ -f $GITHUB_WORKSPACE/$FEEDS_CONF ] && mv -f $GITHUB_WORKSPACE/$FEEDS_CONF feeds.conf.default
+        chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
         $GITHUB_WORKSPACE/$DIY_P1_SH
-
     - name: 安装源码插件源
       run: |
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-
     - name: 读取自定义文件2
       run: |
-        mkdir -p openwrt/files && cp -Rf 1701/files/* openwrt/files
-        [ -e 1701/diy ] && cp -Rf 1701/diy/* $GITHUB_WORKSPACE/openwrt
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        rm -fr openwrt/files/README
-        chmod +x $DIY_P2_SH
         cd openwrt
+        [ -d $GITHUB_WORKSPACE/$DIY_DIY ] && cp -Rf $GITHUB_WORKSPACE/$DIY_DIY/* $GITHUB_WORKSPACE/openwrt
+        [ -d $GITHUB_WORKSPACE/$DIY_FILES ] && cp -Rf $GITHUB_WORKSPACE/$DIY_FILES files
+        [ -f $GITHUB_WORKSPACE/$CONFIG_FILE ] && cp -Rf $GITHUB_WORKSPACE/$CONFIG_FILE .config
+        rm -fr files/README
+        chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: SSH 配置固件
