@@ -76,14 +76,6 @@ jobs:
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-      
-    - name: 增加常用插件
-      run: |
-        cd openwrt
-        git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
-        git clone -b packages --depth 1 https://github.com/xiaorouji/openwrt-passwall package/openwrt-passwall
-        git clone -b luci --depth 1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
-        git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
 
     - name: 安装源码插件源
       run: |
