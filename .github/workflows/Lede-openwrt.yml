@@ -78,12 +78,14 @@ jobs:
         [ -f $GITHUB_WORKSPACE/$FEEDS_CONF ] && mv -f $GITHUB_WORKSPACE/$FEEDS_CONF feeds.conf.default
         chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
         $GITHUB_WORKSPACE/$DIY_P1_SH
+    
     - name: 安装源码插件源
       run: |
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
+    
     - name: 读取自定义文件2
       run: |
         cd openwrt
