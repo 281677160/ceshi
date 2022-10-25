@@ -8,80 +8,74 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Lede-openwrt
-
+name: lede-openwrt
 on:
-  repository_dispatch:
   workflow_dispatch:
     inputs:
       ssh:
-        description: 'SSH connection to Actions'
+        description: '[ssh-actions]改成[ssh],再按[Run workflow]按钮启动,则开启SSH连接配置固件'
         required: false
-        default: 'false'
+        default: 'ssh-actions'
+      days:
+        description: '清理[X]天之前的Actions空间操作记录(可改)'
+        required: true
+        default: '7'
+      rele:
+        description: '保留[X]个Releases不被删除(可改)'
+        required: true
+        default: '10'
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPO_URL: https://github.com/istoreos/istoreos
+  REPO_BRANCH: main
   FEEDS_CONF: Lede/feeds.conf.default
   CONFIG_FILE: Lede/.config
   DIY_P1_SH: Lede/diy-part1.sh
   DIY_P2_SH: Lede/diy-part2.sh
+  SSH_ACTIONS: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: false
+  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
     name: Lede-openwrt
 
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      uses: actions/checkout@v3
 
     - name: 部署编译环境
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install -y build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc1 libc6-dev-i386 lib32stdc++6 subversion flex uglifyjs git-core gcc-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx libelf-dev autoconf automake libtool autopoint device-tree-compiler g++-multilib antlr3 gperf wget curl rename libpcap0.8-dev swig rsync
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo -E apt-get -qq install -y rename
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-    
+
     - name: 拉取源码
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-    
+
     - name: 读取自定义文件1
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-    
-    - name: 拉取源码插件源
-      run: cd openwrt && ./scripts/feeds update -a
-      
-    - name: 增加常用插件
-      run: |
-        cd openwrt
-        find . -name 'luci-app-netdata' -o -name 'netdata' -o -name 'luci-theme-argon' -o -name 'mentohust' | xargs -i rm -rf {}
-        find . -name 'luci-app-ipsec-vpnd' -o -name 'k3screenctrl' -o -name 'luci-app-wol' | xargs -i rm -rf {}
-        find . -name 'luci-app-wrtbwmon' -o -name 'wrtbwmon' | xargs -i rm -rf {}
-        git clone --depth 1 -b "${REPO_BRANCH}" https://github.com/281677160/openwrt-package
-        cp -Rf openwrt-package/* ./ && rm -rf openwrt-package
-        git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
-        git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
 
     - name: 安装源码插件源
       run: |
@@ -92,30 +86,48 @@ jobs:
 
     - name: 读取自定义文件2
       run: |
-        [ -e Lede/files ] && mv Lede/files openwrt/files
-        [ -e Lede/diy ] && cp -Rf Lede/diy/* $GITHUB_WORKSPACE/openwrt
+        mkdir -p openwrt/files && cp -Rf 1701/files/* openwrt/files
+        [ -e 1701/diy ] && cp -Rf 1701/diy/* $GITHUB_WORKSPACE/openwrt
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         rm -fr openwrt/files/README
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-    
+
     - name: SSH 配置固件
-      uses: danshui-git/debugger-action@master
-      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      uses: danshui-git/debugger-action@main
+      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
       env:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        
+    - name: 生成.config配置文件
+      run: |
+        cd openwrt
+        make defconfig
+        ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/config.txt
+        
+    - name: SSH 配置固件
+      uses: danshui-git/debugger-action@main
+      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        
+    - name: 上传.config配置文件在 github actions
+      uses: actions/upload-artifact@main
+      with:
+        name: .config
+        path: config.txt
 
     - name: 下载软件源
       id: package
       run: |
         cd openwrt
-        make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-    
+
     - name: 开始编译固件
       id: compile
       run: |
@@ -124,7 +136,6 @@ jobs:
         echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> .config
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        echo "::set-output name=status::success"
         if [ `grep -c "CONFIG_TARGET_x86_64=y" .config` -eq '1' ]; then
          echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
         elif [ `grep -c "CONFIG_TARGET_x86_generic=y" .config` -eq '1' ]; then
@@ -140,9 +151,9 @@ jobs:
 
     - name: 上传BIN文件夹至actions
       uses: actions/upload-artifact@main
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      if: steps.compile.outcome == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
-        name: Lede-bin-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
+        name: 1701-bin-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
         path: openwrt/bin
 
     - name: 整理BIN文件夹
@@ -151,66 +162,69 @@ jobs:
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
-        rename -v "s/^openwrt/${{ env.date }}-lede/" *
+        rename -v "s/^openwrt/${{ env.date }}-1701/" *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "::set-output name=status::success"
-    
+
     - name: 上传固件至actions
       uses: actions/upload-artifact@main
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: steps.organize.outcome == 'success' && !cancelled()
       with:
-        name: Lede-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
+        name: 1701-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: 上传固件至cowtransfer
       id: cowtransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      if: steps.organize.outcome == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-    
+
     - name: 上传固件至WeTransfer
       id: wetransfer
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
+      if: steps.organize.outcome == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
         echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
         echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-    
+
     - name: 整理发布固件信息
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       run: |
-        echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+        echo "release_tag=$(date +"%m.%d.%H%M")" >> ${GITHUB_OUTPUT}
         touch release.txt
         [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
         [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-        echo "::set-output name=status::success"
-    
+
     - name: 发布固件到release
-      uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: steps.tag.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
+      uses: ncipollo/release-action@main
       with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}
+        tag: ${{ steps.tag.outputs.release_tag }}
+        token: ${{ secrets.REPO_TOKEN }}
+        allowUpdates: true
+        bodyFile: "release.txt"
+        artifacts: "${{ env.FIRMWARE }}/*"
 
-    - name: 删除actions里的老固件
-      uses: GitRML/delete-workflow-runs@main
+    - name: 清理Actions空间
+      if: env.REPO_TOKEN
+      uses: Mattraks/delete-workflow-runs@v2
       with:
-        retain_days: 1
-        keep_minimum_runs: 3
-
-    - name: 删除Releases的老发布固件
-      uses: dev-drprasad/delete-older-releases@v0.1.0
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: ${{ env.retain_days }}
+          keep_minimum_runs: 0
+    
+    - name: 删除releases
+      if: env.REPO_TOKEN
+      uses: danshui-git/delete-older-releases@main
       with:
-        keep_latest: 3
+        repo: ${{ github.repository }}
+        keep_latest: ${{ env.keep_latest }}
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
