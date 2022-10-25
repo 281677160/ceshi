@@ -10,8 +10,6 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
 
-git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
-svn co https://github.com/immortalwrt/packages/trunk/net/redsocks2  package/redsocks2
 svn co https://github.com/coolsnowwolf/packages/trunk/net/baidupcs-web package/baidupcs-web
 svn co https://github.com/coolsnowwolf/packages/trunk/devel/go-rice package/go-rice
 git clone -b packages --depth 1 https://github.com/xiaorouji/openwrt-passwall package/openwrt-passwall
