@@ -107,13 +107,6 @@ jobs:
         make defconfig
         ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/config.txt
         
-    - name: SSH 配置固件
-      uses: danshui-git/debugger-action@main
-      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        
     - name: 上传.config配置文件在 github actions
       uses: actions/upload-artifact@main
       with:
