@@ -9,3 +9,9 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
+
+svn co https://github.com/coolsnowwolf/packages/trunk/net/baidupcs-web package/baidupcs-web
+svn co https://github.com/coolsnowwolf/packages/trunk/devel/go-rice package/go-rice
+git clone -b packages --depth 1 https://github.com/xiaorouji/openwrt-passwall package/openwrt-passwall
+git clone -b luci --depth 1 https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone -b master --depth 1 https://github.com/vernesong/OpenClash package/luci-app-openclash
