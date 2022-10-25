@@ -12,8 +12,8 @@
 
 svn export https://github.com/Lienol/openwrt/branches/21.02/package/default-settings package/default-settings
 
-svn co https://github.com/281677160/luci-theme-argon/branches/21.02 package/luci-theme-argon
-svn co https://github.com/281677160/luci-theme-argon/branches/argon-config package/luci-app-argon-config
+svn export https://github.com/281677160/luci-theme-argon/branches/21.02 package/luci-theme-argon
+svn export https://github.com/281677160/luci-theme-argon/branches/argon-config package/luci-app-argon-config
 git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
 svn co https://github.com/immortalwrt/packages/trunk/net/redsocks2 package/redsocks2
 git clone -b packages --depth 1 https://github.com/xiaorouji/openwrt-passwall package/openwrt-passwall
