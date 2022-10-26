@@ -10,10 +10,6 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
 
-curl -fsSL https://raw.githubusercontent.com/coolsnowwolf/lede/master/include/toplevel.mk > include/toplevel.mk
-rm -rf package/lean
-svn export https://github.com/coolsnowwolf/lede/trunk/package/lean package/lean
-
 svn export https://github.com/281677160/luci-theme-argon/branches/18.06 package/luci-theme-argon
 svn export https://github.com/281677160/luci-theme-argon/branches/argon-config package/luci-app-argon-config
 
