@@ -109,6 +109,12 @@ jobs:
         make defconfig
         ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/config.txt
         
+    - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
+      uses: HiGarfield/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        prefix: $GITHUB_WORKSPACE/openwrt
+        
     - name: SSH 配置固件
       uses: danshui-git/debugger-action@main
       if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
