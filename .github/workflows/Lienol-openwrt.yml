@@ -26,8 +26,8 @@ on:
         default: '10'
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/openwrt
-  REPO_BRANCH: lede-17.01
+  REPO_URL: https://github.com/Lienol/openwrt
+  REPO_BRANCH: 19.07
   DIY_DIY: Lienol/diy
   DIY_FILES: Lienol/files
   FEEDS_CONF: Lienol/feeds.conf.default
