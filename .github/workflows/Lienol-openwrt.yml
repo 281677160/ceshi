@@ -26,8 +26,8 @@ on:
         default: '10'
 
 env:
-  REPO_URL: https://github.com/Lienol/openwrt
-  REPO_BRANCH: 19.07
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-21.02
   DIY_DIY: Lienol/diy
   DIY_FILES: Lienol/files
   FEEDS_CONF: Lienol/feeds.conf.default
@@ -110,7 +110,7 @@ jobs:
         ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/config.txt
         
     - name: 缓存加速(7天内对应源码相同机型二次编译有效，每次只保留一个源码的缓存)
-      uses: HiGarfield/cachewrtbuild@main
+      uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
         prefix: $GITHUB_WORKSPACE/openwrt
