@@ -26,8 +26,8 @@ on:
         default: '10'
 
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-21.02
+  REPO_URL: https://github.com/Lienol/openwrt
+  REPO_BRANCH: 3764e69ee60003059a7578d5fd3db3ec02ffbb01
   DIY_DIY: Lienol/diy
   DIY_FILES: Lienol/files
   FEEDS_CONF: Lienol/feeds.conf.default
