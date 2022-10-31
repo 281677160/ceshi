@@ -5,7 +5,7 @@ src-git telephony https://git.openwrt.org/feed/telephony.git;openwrt-19.07
 src-git freifunk https://github.com/freifunk/openwrt-packages.git;openwrt-19.07
 src-git lienol https://github.com/Lienol/openwrt-package.git;main
 src-git other https://github.com/Lienol/openwrt-package.git;other
-src-git pack https://github.com/281677160/update-package.git;19.07
+src-git pack https://github.com/281677160/openwrt-package.git;19.07
 src-git helloworld https://github.com/fw876/helloworld
 src-git passwall https://github.com/xiaorouji/openwrt-passwall;packages
 src-git passwall1 https://github.com/xiaorouji/openwrt-passwall;luci
