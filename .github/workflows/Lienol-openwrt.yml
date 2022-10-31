@@ -27,7 +27,7 @@ on:
 
 env:
   REPO_URL: https://github.com/Lienol/openwrt
-  REPO_BRANCH: 3764e69ee60003059a7578d5fd3db3ec02ffbb01
+  REPO_BRANCH: 19.07
   DIY_DIY: Lienol/diy
   DIY_FILES: Lienol/files
   FEEDS_CONF: Lienol/feeds.conf.default
@@ -76,6 +76,8 @@ jobs:
       run: |
         cd openwrt
         [ -f $GITHUB_WORKSPACE/$FEEDS_CONF ] && mv -f $GITHUB_WORKSPACE/$FEEDS_CONF feeds.conf.default
+        ./scripts/feeds clean
+        ./scripts/feeds update -a
         chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
