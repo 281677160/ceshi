@@ -9,7 +9,7 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
-
+sed -i 's/PATCHVER:=4.9/PATCHVER:=4.14/g' target/linux/x86/Makefile
 curl -fsSL https://raw.githubusercontent.com/281677160/openwrt-package/usb/libs/package/network/utils/iproute2/Makefile > package/network/utils/iproute2/Makefile
 curl -fsSL https://raw.githubusercontent.com/281677160/openwrt-package/usb/libs/package/kernel/linux/modules/netsupport.mk > package/kernel/linux/modules/netsupport.mk
 rm -rf feeds/packages/libs/libcap && svn co https://github.com/281677160/openwrt-package/branches/usb/libs/libcap feeds/packages/libs/libcap
