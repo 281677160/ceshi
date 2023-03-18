@@ -9,4 +9,4 @@
 sed -i 's/${IPADDR}/192.168.2.2/g' "${GENERATE_PATH}"
 
 #2. 固件免密登录设置
-[[ -n "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
+[[ -f "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
