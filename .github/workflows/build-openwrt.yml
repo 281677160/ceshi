@@ -74,6 +74,9 @@ jobs:
         export SOURCE="$(echo "${{ inputs.REPO_URL }}" |cut -d"/" -f1)"
         export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2)"
         export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |sed 's/.//g')"
+        echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
+        echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
+        echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
 
     - name: 部署编译环境
       env:
