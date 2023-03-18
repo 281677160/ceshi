@@ -22,7 +22,7 @@ on:
         required: true
         default: 'master'
       CONFIG_FILE:
-        description: '请输入set_config文件夹里面的配置文件名称'
+        description: '请输入set_config文件夹里的配置文件名称'
         required: true
         default: 'x86_64'
       fork:
@@ -34,7 +34,7 @@ on:
           - '1806-luci.sh'
           - '1907-luci.sh'
       days:
-        description: '清理[X]天之前的Actions空间操作记录'
+        description: '清理[X]天之前的Artifacts'
         required: true
         default: '7'
       rele:
@@ -42,14 +42,14 @@ on:
         required: true
         default: '10'
       UPLOAD_FIRMWARE:
-        description: '上传固件到 Github Artifacts'
+        description: '上传固件到 Artifacts'
         required: false
         default: 'true'
         type: boolean
       UPLOAD_RELEASE:
-        description: '发布固件到 Github Releases'
+        description: '发布固件到 Releases'
         required: false
-        default: 'true'
+        default: 'false'
         type: boolean
         
 env:
@@ -146,9 +146,9 @@ jobs:
         echo "FILE_DATE=-$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
         echo "date=$(date +'%m.%d')" >> $GITHUB_ENV
 
-    - name: 上传固件至actions
-      uses: actions/upload-artifact@main
+    - name: 上传固件至Artifacts
       if: steps.compile.outcome == 'success'&& github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      uses: actions/upload-artifact@main
       with:
         name: ${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE_PATH }}
@@ -163,7 +163,7 @@ jobs:
         allowUpdates: true
         artifacts: "${{ env.FIRMWARE_PATH }}/*"
 
-    - name: 清理Actions空间
+    - name: 清理Artifacts
       if: env.REPO_TOKEN
       uses: Mattraks/delete-workflow-runs@v2
       with:
