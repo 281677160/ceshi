@@ -56,14 +56,9 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc
-        sudo -E apt-get -qq install -y ack antlr3 aria2 asciidoc autoconf automake autopoint binutils bison build-essential \
-        bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib \
-        git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev \
-        libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz \
-        mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3.5 python3-pip libpython3-dev qemu-utils \
-        rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        sudo -E apt-get -qq install -y rename
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc /swapfile
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo -E apt-get -qq install -y rename pigz libfuse-dev
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
@@ -76,6 +71,7 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
 
     - name: 读取自定义文件1
       run: |
@@ -100,37 +96,13 @@ jobs:
         rm -fr files/README
         chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
         $GITHUB_WORKSPACE/$DIY_P2_SH
-
-    - name: SSH 配置固件
-      uses: danshui-git/debugger-action@main
-      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        
-    - name: 生成.config配置文件
-      run: |
-        cd openwrt
-        make defconfig
-        ./scripts/diffconfig.sh > ${GITHUB_WORKSPACE}/config.txt
-        
-    - name: SSH 配置固件
-      uses: danshui-git/debugger-action@main
-      if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        
-    - name: 上传.config配置文件在 github actions
-      uses: actions/upload-artifact@main
-      with:
-        name: .config
-        path: config.txt
+        echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> .config
 
     - name: 下载软件源
       id: package
       run: |
         cd openwrt
+        make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -139,38 +111,26 @@ jobs:
       id: compile
       run: |
         cd openwrt
-        sed -i '/IMAGES_GZIP/d' .config
-        echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> .config
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
-        if [ `grep -c "CONFIG_TARGET_x86_64=y" .config` -eq '1' ]; then
-         echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
-        elif [ `grep -c "CONFIG_TARGET_x86_generic=y" .config` -eq '1' ]; then
-         echo "TARGET_PROFILE=x86-32" >> $GITHUB_ENV
-        elif [ `grep -c "CONFIG_TARGET.*DEVICE.*=y" .config` -eq '1' ]; then
-          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-          [ -s DEVICE_NAME ] && echo "TARGET_PROFILE=$(cat DEVICE_NAME)" >> $GITHUB_ENV
+
+        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
+        export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
+        if [[ `grep -Eoc 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+          echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
+        elif [[ `grep -Eoc 'CONFIG_TARGET_x86=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+          echo "TARGET_PROFILE=x86-32" >> $GITHUB_ENV
+        elif [[ `grep -Eoc 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+          echo "TARGET_PROFILE=Armvirt_64" >> $GITHUB_ENV
+        elif [[ `grep -Eoc "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+          echo "TARGET_PROFILE=$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')" >> $GITHUB_ENV
         else
-          echo "TARGET_PROFILE=armvirt" >> $GITHUB_ENV
+          echo "TARGET_PROFILE=${TARGET_PROFILE_DG}" >> $GITHUB_ENV
         fi
+        echo "FIRMWARE_PATH=${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
         echo "FILE_DATE=-$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
         echo "date=$(date +'%m.%d')" >> $GITHUB_ENV
-
-    - name: 上传BIN文件夹至actions
-      uses: actions/upload-artifact@main
-      if: steps.compile.outcome == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: 1701-bin-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
-    - name: 整理BIN文件夹
-      id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-      run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages
-        rename -v "s/^openwrt/${{ env.date }}-1701/" *
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
 
     - name: 上传固件至actions
       uses: actions/upload-artifact@main
@@ -178,33 +138,6 @@ jobs:
       with:
         name: 1701-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
-
-    - name: 上传固件至cowtransfer
-      id: cowtransfer
-      if: steps.organize.outcome == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-
-    - name: 上传固件至WeTransfer
-      id: wetransfer
-      if: steps.organize.outcome == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-
-    - name: 整理发布固件信息
-      id: tag
-      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
-      run: |
-        echo "release_tag=$(date +"%m.%d.%H%M")" >> ${GITHUB_OUTPUT}
-        touch release.txt
-        [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-        [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
 
     - name: 发布固件到release
       if: steps.tag.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
