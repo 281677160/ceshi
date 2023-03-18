@@ -94,8 +94,6 @@ jobs:
       run: |
         cd openwrt
         ./scripts/feeds update -a > /dev/null 2>&1
-        [[ -f "$GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
-        echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
         [[ -f "$GITHUB_WORKSPACE/${{ env.FEEDS_CONF }}" ]] && mv -f $GITHUB_WORKSPACE/${{ env.FEEDS_CONF }} feeds.conf.default
         [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_SOURCE }}" ]] && cp -Rf $GITHUB_WORKSPACE/${{ env.DIY_SOURCE }}/* $GITHUB_WORKSPACE/openwrt/
         [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_FILES }}" ]] && mv -f $GITHUB_WORKSPACE/${{ env.DIY_FILES }}/* files
@@ -110,6 +108,8 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
+        [[ -f "$GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
+        echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
 
     - name: 下载软件源
       id: package
@@ -119,16 +119,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
-    - name: 开始编译固件
-      id: compile
-      run: |
-        cd openwrt
-        echo -e "$(nproc) thread compile"
-        make -j$(nproc) || make -j1 V=s
-        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
-        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
-        export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
         if [[ `grep -Eoc 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
           echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
         elif [[ `grep -Eoc 'CONFIG_TARGET_x86=y' ${HOME_PATH}/.config` -eq '1' ]]; then
@@ -140,6 +130,24 @@ jobs:
         else
           echo "TARGET_PROFILE=${TARGET_PROFILE_DG}" >> $GITHUB_ENV
         fi
+        
+    - name: 缓存加速
+      if: env.CACHEWRTBUILD_SWITCH == 'true'
+      uses: stupidloud/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        mixkey: "${{ env.TARGET_PROFILE }}"
+        prefix: ${{ github.workspace }}/openwrt
+
+    - name: 开始编译固件
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 V=s
+        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
+        export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
         echo "FILE_DATE=-$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
         echo "date=$(date +'%m.%d')" >> $GITHUB_ENV
         cd "${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
