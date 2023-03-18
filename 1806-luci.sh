@@ -6,7 +6,7 @@
 
 
 #1. 修改固件后台IP,把'192.168.2.2'改成您想要的就行
-sed -i 's/${IPADDR}/192.168.2.2/g' ${GENERATE_PATH}"
+sed -i 's/${IPADDR}/192.168.2.2/g' "${GENERATE_PATH}"
 
 #2. 固件免密登录设置
 [[ -n "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
