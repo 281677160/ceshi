@@ -148,6 +148,7 @@ jobs:
         export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
+        echo "FIRMWARE_PATH=${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
         if [[ `grep -c 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
           echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
         elif [[ `grep -c 'CONFIG_TARGET_x86=y' ${HOME_PATH}/.config` -eq '1' ]]; then
@@ -176,12 +177,11 @@ jobs:
         make -j$(nproc) || make -j1 V=s
         echo "FILE_DATE=$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
         echo "date=$(date +'%m.%d')" >> $GITHUB_ENV
-        cd "${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
+        cd "${FIRMWARE_PATH}"
         mkdir -p ipk
         cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
         sudo tar -czf ipk.tar.gz ipk && sync
         sudo rm -rf ipk profiles.json packages
-        echo "FIRMWARE_PATH=$PWD" >> $GITHUB_ENV
 
     - name: 上传固件至Artifacts
       if: steps.compile.outcome == 'success'&& github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()
