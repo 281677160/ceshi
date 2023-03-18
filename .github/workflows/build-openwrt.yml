@@ -33,11 +33,11 @@ on:
         options:
           - '1806-luci.sh'
           - '1907-luci.sh'
-      days:
+      RETAIN_DAYS:
         description: '清理[X]天之前的Artifacts'
         required: true
         default: '7'
-      rele:
+      KEEP_LATEST:
         description: '保留[X]个Releases不被删除'
         required: true
         default: '10'
@@ -66,6 +66,8 @@ env:
   REPO_BRANCH: master
   CONFIG_FILE: x86_64
   DIY_PART_SH: 1806-luci.sh
+  RETAIN_DAYS: 7
+  KEEP_LATEST: 10
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
@@ -99,6 +101,8 @@ jobs:
           echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
           echo "CONFIG_FILE=set_config/${{ inputs.CONFIG_FILE }}" >> ${GITHUB_ENV}
           echo "DIY_PART_SH=${{ inputs.DIY_PART_SH }}" >> ${GITHUB_ENV}
+          echo "RETAIN_DAYS=${{ inputs.RETAIN_DAYS }}" >> ${GITHUB_ENV}
+          echo "KEEP_LATEST=${{ inputs.KEEP_LATEST }}" >> ${GITHUB_ENV}
           echo "UPLOAD_FIRMWARE=${{ inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${{ inputs.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
@@ -107,6 +111,8 @@ jobs:
           echo "REPO_BRANCH=${REPO_BRANCH}" >> ${GITHUB_ENV}
           echo "CONFIG_FILE=set_config/${CONFIG_FILE}" >> ${GITHUB_ENV}
           echo "DIY_PART_SH=${DIY_PART_SH}" >> ${GITHUB_ENV}
+          echo "RETAIN_DAYS=${RETAIN_DAYS}" >> ${GITHUB_ENV}
+          echo "KEEP_LATEST=${KEEP_LATEST}" >> ${GITHUB_ENV}
           echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${CACHEWRTBUILD_SWITCH}" >> ${GITHUB_ENV}
