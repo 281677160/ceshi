@@ -22,15 +22,15 @@ on:
         required: true
         default: 'master'
       CONFIG_FILE:
-        description: '输入set_config文件夹里面的配置文件名称'
+        description: '请输入set_config文件夹里面的配置文件名称'
         required: true
         default: 'x86_64'
       days:
-        description: '清理[X]天之前的Actions空间操作记录(可改)'
+        description: '清理[X]天之前的Actions空间操作记录'
         required: true
         default: '7'
       rele:
-        description: '保留[X]个Releases不被删除(可改)'
+        description: '保留[X]个Releases不被删除'
         required: true
         default: '10'
       UPLOAD_FIRMWARE:
