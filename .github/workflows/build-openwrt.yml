@@ -51,6 +51,11 @@ on:
         required: false
         default: 'false'
         type: boolean
+      CACHEWRTBUILD_SWITCH:
+        description: '缓存加速编译'
+        required: false
+        default: 'true'
+        type: boolean
         
 env:
   DIY_SOURCE: diy
@@ -114,10 +119,17 @@ jobs:
     - name: 安装源码插件源
       run: |
         cd openwrt
+        if [[ "${{ inputs.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
+          wget -q https://raw.githubusercontent.com/281677160/common-main/main/language/zh_Hans.sh -O ${HOME_PATH}/zh_Hans.sh
+          sudo chmod +x ${HOME_PATH}/zh_Hans.sh
+          /bin/bash ${HOME_PATH}/zh_Hans.sh
+          rm -rf ${HOME_PATH}/zh_Hans.sh
+        fi
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-        [[ -f "$GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
+        [[ -f "$GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }}" ]] && \
+        cp -Rf $GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
         echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
 
     - name: 下载软件源
@@ -144,7 +156,7 @@ jobs:
         fi
         
     - name: 缓存加速
-      if: env.CACHEWRTBUILD_SWITCH == 'true'
+      if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
       uses: stupidloud/cachewrtbuild@main
       with:
         ccache: 'true'
