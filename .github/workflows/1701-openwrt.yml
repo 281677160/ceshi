@@ -25,6 +25,14 @@ on:
         description: '输入set_config文件夹里面的配置文件名称'
         required: true
         default: 'x86_64'
+      days:
+        description: '清理[X]天之前的Actions空间操作记录(可改)'
+        required: true
+        default: '7'
+      rele:
+        description: '保留[X]个Releases不被删除(可改)'
+        required: true
+        default: '10'
       UPLOAD_FIRMWARE:
         description: '上传固件到 Github Artifacts'
         required: false
@@ -35,14 +43,6 @@ on:
         required: false
         default: 'true'
         type: boolean
-      days:
-        description: '清理[X]天之前的Actions空间操作记录(可改)'
-        required: true
-        default: '7'
-      rele:
-        description: '保留[X]个Releases不被删除(可改)'
-        required: true
-        default: '10'
         
 env:
   DIY_SOURCE: diy
