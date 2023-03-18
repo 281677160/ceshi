@@ -25,7 +25,7 @@ on:
         description: '请输入set_config文件夹里的配置文件名称'
         required: true
         default: 'x86_64'
-      fork:
+      DIY_PART_SH:
         description: '请选择LUCI版本的自定义文件'
         required: true
         default: '1806-luci.sh'
@@ -56,7 +56,6 @@ env:
   DIY_SOURCE: diy
   DIY_FILES: files
   DIY_PATCH: patches
-  DIY_PART_SH: diy-part.sh
   FEEDS_CONF: feeds.conf.default
   TZ: Asia/Shanghai
 
@@ -102,8 +101,8 @@ jobs:
         [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_FILES }}" ]] && mv -f $GITHUB_WORKSPACE/${{ env.DIY_FILES }}/* files
         [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_PACTH }}" ]] && \
         find "$GITHUB_WORKSPACE/${{ env.DIY_PACTH }}" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
-        $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
+        chmod +x $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
+        $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
 
     - name: 安装源码插件源
       run: |
