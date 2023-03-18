@@ -69,7 +69,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
-  # 定时编译的话，控制于以上为准
+  # 定时编译的话，修改控制于以上为准
   DIY_SOURCE: diy
   DIY_FILES: files
   DIY_PATCH: patches
