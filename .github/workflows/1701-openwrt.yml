@@ -140,13 +140,13 @@ jobs:
 
     - name: 上传固件至actions
       uses: actions/upload-artifact@main
-      if: steps.organize.outcome == 'success' && !cancelled()
+      if: steps.compile.outcome == 'success'&& github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()
       with:
         name: ${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: 发布固件到release
-      if: steps.tag.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
+      if: steps.tag.outcome == 'success' && github.event.inputs.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       uses: ncipollo/release-action@main
       with:
         name: ${{ env.TARGET_PROFILE }}
@@ -161,7 +161,7 @@ jobs:
       with:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
-          retain_days: ${{ env.retain_days }}
+          retain_days: ${{ inputs.days }}
           keep_minimum_runs: 0
     
     - name: 删除releases
@@ -169,7 +169,7 @@ jobs:
       uses: danshui-git/delete-older-releases@main
       with:
         repo: ${{ github.repository }}
-        keep_latest: ${{ env.keep_latest }}
+        keep_latest: ${{ inputs.rele }}
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
