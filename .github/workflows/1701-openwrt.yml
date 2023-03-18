@@ -45,8 +45,12 @@ on:
         default: '10'
         
 env:
+  DIY_SOURCE: diy
+  DIY_FILES: files
+  DIY_PATCH: patches
+  DIY_PART_SH: diy-part.sh
   FEEDS_CONF: feeds.conf.default
-  DIY_P1_SH: diy-part1.sh
+  HOME_PATH: $GITHUB_WORKSPACE/openwrt
   TZ: Asia/Shanghai
 
 jobs:
@@ -78,19 +82,20 @@ jobs:
         df -hT $PWD
         git clone https://github.com/${{ inputs.REPO_URL }} -b ${{ inputs.REPO_BRANCH }} openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
 
     - name: 读取自定义文件
       run: |
         cd openwrt
         ./scripts/feeds update -a > /dev/null 2>&1
         [[ -f "$GITHUB_WORKSPACE/${{ inputs.FEEDS_CONF }}" ]] && mv -f $GITHUB_WORKSPACE/${{ inputs.FEEDS_CONF }} feeds.conf.default
-        [[ -d "$GITHUB_WORKSPACE/$DIY_DIY" ]] && cp -Rf $GITHUB_WORKSPACE/$DIY_DIY/* $GITHUB_WORKSPACE/openwrt
+        [[ -d "$GITHUB_WORKSPACE/$DIY_SOURCE" ]] && cp -Rf $GITHUB_WORKSPACE/$DIY_SOURCE/* $GITHUB_WORKSPACE/openwrt
         [[ -d "$GITHUB_WORKSPACE/$DIY_FILES" ]] && cp -Rf $GITHUB_WORKSPACE/$DIY_FILES files
+        [[ -d "$GITHUB_WORKSPACE/$DIY_PACTH" ]] && \
+        find "patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
         [[ -f "$GITHUB_WORKSPACE/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
         echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
-        chmod +x $GITHUB_WORKSPACE/${{ inputs.DIY_P1_SH }}
-        $GITHUB_WORKSPACE/${{ inputs.DIY_P1_SH }}
+        chmod +x $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
+        $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
 
     - name: 安装源码插件源
       run: |
