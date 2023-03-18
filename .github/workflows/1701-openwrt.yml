@@ -25,6 +25,14 @@ on:
         description: '请输入set_config文件夹里面的配置文件名称'
         required: true
         default: 'x86_64'
+      fork:
+        description: '请选择LUCI版本的自定义文件'
+        required: true
+        default: '1806-luci.sh'
+        type: choice
+        options:
+          - '1806-luci.sh'
+          - '1907-luci.sh'
       days:
         description: '清理[X]天之前的Actions空间操作记录'
         required: true
