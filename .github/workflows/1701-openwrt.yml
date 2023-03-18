@@ -60,23 +60,6 @@ on:
         required: true
         default: '10'
 
-env:
-  REPO_URL: https://github.com/x-wrt/x-wrt
-  REPO_BRANCH: master
-  DIY_DIY: 1701/diy
-  DIY_FILES: 1701/files
-  FEEDS_CONF: 1701/feeds.conf.default
-  CONFIG_FILE: 1701/.config
-  DIY_P1_SH: 1701/diy-part1.sh
-  DIY_P2_SH: 1701/diy-part2.sh
-  SSH_ACTIONS: false
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: true
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: true
-  TZ: Asia/Shanghai
-
 jobs:
   build:
     runs-on: ubuntu-22.04
