@@ -80,7 +80,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
-    name: ${{ inputs.REPO_URL }}
+    name: 编译固件
 
     steps:
     - name: Checkout
@@ -126,7 +126,7 @@ jobs:
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown $USER:$GROUPS /${{ env.DIY_WORK }}
 
-    - name: 拉取${{ inputs.REPO_URL }}源码
+    - name: 拉取源码
       working-directory: /${{ env.DIY_WORK }}
       run: |
         df -hT $PWD
@@ -138,7 +138,7 @@ jobs:
         echo "GENERATE_PATH=${GENERATE_PATH}" >> $GITHUB_ENV
         echo "IPADDR=$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
 
-    - name: 读取${{ inputs.DIY_PART_SH }}扩展文件
+    - name: 读取扩展文件
       run: |
         cd openwrt
         ./scripts/feeds update -a > /dev/null 2>&1
