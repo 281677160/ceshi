@@ -50,7 +50,6 @@ env:
   DIY_PATCH: patches
   DIY_PART_SH: diy-part.sh
   FEEDS_CONF: feeds.conf.default
-  HOME_PATH: $GITHUB_WORKSPACE/openwrt
   TZ: Asia/Shanghai
 
 jobs:
@@ -82,6 +81,7 @@ jobs:
         df -hT $PWD
         git clone https://github.com/${{ inputs.REPO_URL }} -b ${{ inputs.REPO_BRANCH }} openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
 
     - name: 读取自定义文件
       run: |
@@ -142,19 +142,18 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outcome == 'success' && !cancelled()
       with:
-        name: 1701-${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
+        name: ${{ env.TARGET_PROFILE }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE_PATH }}
 
     - name: 发布固件到release
       if: steps.tag.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       uses: ncipollo/release-action@main
       with:
-        name: ${{ env.SOURCE }}-${{ env.TARGET_PROFILE }}
-        tag: ${{ steps.tag.outputs.release_tag }}
+        name: ${{ env.TARGET_PROFILE }}
+        tag: ${{ env.FILE_DATE }}
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
-        bodyFile: "release.txt"
-        artifacts: "${{ env.FIRMWARE }}/*"
+        artifacts: "${{ env.FIRMWARE_PATH }}/*"
 
     - name: 清理Actions空间
       if: env.REPO_TOKEN
