@@ -8,14 +8,49 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: 1701-openwrt
+name: 打包晶晨固件
 on:
+  repository_dispatch:
   workflow_dispatch:
     inputs:
-      ssh:
-        description: '[ssh-actions]改成[ssh],再按[Run workflow]按钮启动,则开启SSH连接配置固件'
+      source_branch:
+        description: '选择源码(先确认您已经编译了有)'
+        required: true
+        default: 'Lede'
+        type: choice
+        options:
+          - 'Lede'
+          - 'Immortalwrt'
+          - 'Official'
+          - 'Xwrt'
+          - 'Lienol'
+      amlogic_model:
+        description: '输入机型,比如：s905d 或 s905d_s905x2'
+        required: true
+        default: ''
+      amlogic_kernel:
+        description: '输入内核,比如：5.10.172 或 5.15.97_6.1.16'
+        required: true
+        default: ''
+      rootfs_size:
+        description: '设置rootfs大小(单位：MiB),比如：960'
+        required: true
+        default: '1024'
+      UPLOAD_FIRMWARE:
+        description: '上传固件到 Github Artifacts'
         required: false
-        default: 'ssh-actions'
+        default: 'false'
+        type: boolean
+      UPLOAD_RELEASE:
+        description: '发布固件到 Github Releases'
+        required: false
+        default: 'true'
+        type: boolean
+      UPLOAD_WETRANSFER:
+        description: '上传固件到 WETRANSFER'
+        required: false
+        default: 'false'
+        type: boolean
       days:
         description: '清理[X]天之前的Actions空间操作记录(可改)'
         required: true
