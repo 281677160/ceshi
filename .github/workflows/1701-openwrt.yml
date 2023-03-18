@@ -22,7 +22,7 @@ on:
         required: true
         default: 'master'
       CONFIG_FILE:
-        description: '输入config文件夹里面的配置文件名称'
+        description: '输入set_config文件夹里面的配置文件名称'
         required: true
         default: 'x86_64'
       UPLOAD_FIRMWARE:
@@ -92,7 +92,7 @@ jobs:
         [[ -d "$GITHUB_WORKSPACE/$DIY_FILES" ]] && cp -Rf $GITHUB_WORKSPACE/$DIY_FILES files
         [[ -d "$GITHUB_WORKSPACE/$DIY_PACTH" ]] && \
         find "patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        [[ -f "$GITHUB_WORKSPACE/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
+        [[ -f "$GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
         echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
         chmod +x $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
         $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
