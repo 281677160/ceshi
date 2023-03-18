@@ -97,7 +97,7 @@ jobs:
         if [[ -n "${{ inputs.REPO_URL }}" ]]; then
           echo "REPO_URL=https://github.com/${{ inputs.REPO_URL }}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
-          echo "CONFIG_FILE=${{ inputs.CONFIG_FILE }}" >> ${GITHUB_ENV}
+          echo "CONFIG_FILE=set_config/${{ inputs.CONFIG_FILE }}" >> ${GITHUB_ENV}
           echo "DIY_PART_SH=${{ inputs.DIY_PART_SH }}" >> ${GITHUB_ENV}
           echo "UPLOAD_FIRMWARE=${{ inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
@@ -105,7 +105,7 @@ jobs:
         else
           echo "REPO_URL=https://github.com/${REPO_URL}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${REPO_BRANCH}" >> ${GITHUB_ENV}
-          echo "CONFIG_FILE=${CONFIG_FILE}" >> ${GITHUB_ENV}
+          echo "CONFIG_FILE=set_config/${CONFIG_FILE}" >> ${GITHUB_ENV}
           echo "DIY_PART_SH=${DIY_PART_SH}" >> ${GITHUB_ENV}
           echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> ${GITHUB_ENV}
@@ -147,13 +147,13 @@ jobs:
         [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_FILES }}" ]] && mv -f $GITHUB_WORKSPACE/${{ env.DIY_FILES }}/* files
         [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_PACTH }}" ]] && \
         find "$GITHUB_WORKSPACE/${{ env.DIY_PACTH }}" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        chmod +x $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
-        $GITHUB_WORKSPACE/${{ inputs.DIY_PART_SH }}
+        chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
+        $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
 
     - name: 安装源码插件源
       run: |
         cd openwrt
-        if [[ "${{ inputs.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
+        if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
           wget -q https://raw.githubusercontent.com/281677160/common-main/main/language/zh_Hans.sh -O ${HOME_PATH}/zh_Hans.sh
           sudo chmod +x ${HOME_PATH}/zh_Hans.sh
           /bin/bash ${HOME_PATH}/zh_Hans.sh
@@ -162,8 +162,8 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-        [[ -f "$GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }}" ]] && \
-        cp -Rf $GITHUB_WORKSPACE/set_config/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
+        [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
+        cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
         echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
 
     - name: 下载软件源
@@ -213,14 +213,14 @@ jobs:
         sudo rm -rf ipk profiles.json packages
 
     - name: 上传固件至Artifacts
-      if: steps.compile.outcome == 'success'&& github.event.inputs.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: steps.compile.outcome == 'success'&& env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       uses: actions/upload-artifact@main
       with:
         name: ${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}-${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: 发布固件到release
-      if: steps.compile.outcome == 'success' && github.event.inputs.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
+      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       uses: ncipollo/release-action@main
       with:
         name: ${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}
