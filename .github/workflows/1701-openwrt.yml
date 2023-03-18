@@ -43,12 +43,17 @@ on:
         description: '保留[X]个Releases不被删除(可改)'
         required: true
         default: '10'
+        
+env:
+  FEEDS_CONF: feeds.conf.default
+  DIY_P1_SH: diy-part1.sh
+  TZ: Asia/Shanghai
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     if: ${{ github.event.repository.owner.id }} == ${{ github.event.sender.id }}
-    name: 1701-openwrt
+    name: ${{ inputs.REPO_URL }}
 
     steps:
     - name: Checkout
@@ -71,16 +76,21 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        git clone https://github.com/${{ inputs.REPO_URL }} -b ${{ inputs.REPO_BRANCH }} openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
 
-    - name: 读取自定义文件1
+    - name: 读取自定义文件
       run: |
         cd openwrt
-        [ -f $GITHUB_WORKSPACE/$FEEDS_CONF ] && mv -f $GITHUB_WORKSPACE/$FEEDS_CONF feeds.conf.default
-        chmod +x $GITHUB_WORKSPACE/$DIY_P1_SH
-        $GITHUB_WORKSPACE/$DIY_P1_SH
+        ./scripts/feeds update -a > /dev/null 2>&1
+        [[ -f "$GITHUB_WORKSPACE/${{ inputs.FEEDS_CONF }}" ]] && mv -f $GITHUB_WORKSPACE/${{ inputs.FEEDS_CONF }} feeds.conf.default
+        [[ -d "$GITHUB_WORKSPACE/$DIY_DIY" ]] && cp -Rf $GITHUB_WORKSPACE/$DIY_DIY/* $GITHUB_WORKSPACE/openwrt
+        [[ -d "$GITHUB_WORKSPACE/$DIY_FILES" ]] && cp -Rf $GITHUB_WORKSPACE/$DIY_FILES files
+        [[ -f "$GITHUB_WORKSPACE/${{ inputs.CONFIG_FILE }}" ]] && cp -Rf $GITHUB_WORKSPACE/${{ inputs.CONFIG_FILE }} ${HOME_PATH}/.config
+        echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
+        chmod +x $GITHUB_WORKSPACE/${{ inputs.DIY_P1_SH }}
+        $GITHUB_WORKSPACE/${{ inputs.DIY_P1_SH }}
 
     - name: 安装源码插件源
       run: |
@@ -88,17 +98,6 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-
-    - name: 读取自定义文件2
-      run: |
-        cd openwrt
-        [ -d $GITHUB_WORKSPACE/$DIY_DIY ] && cp -Rf $GITHUB_WORKSPACE/$DIY_DIY/* $GITHUB_WORKSPACE/openwrt
-        [ -d $GITHUB_WORKSPACE/$DIY_FILES ] && cp -Rf $GITHUB_WORKSPACE/$DIY_FILES files
-        [ -f $GITHUB_WORKSPACE/$CONFIG_FILE ] && cp -Rf $GITHUB_WORKSPACE/$CONFIG_FILE .config
-        rm -fr files/README
-        chmod +x $GITHUB_WORKSPACE/$DIY_P2_SH
-        $GITHUB_WORKSPACE/$DIY_P2_SH
-        echo -e "\nCONFIG_TARGET_IMAGES_GZIP=y" >> .config
 
     - name: 下载软件源
       id: package
