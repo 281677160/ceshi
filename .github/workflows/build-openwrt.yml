@@ -107,7 +107,6 @@ jobs:
         export GENERATE_PATH="${GITHUB_WORKSPACE}/openwrt/package/base-files/files/bin/config_generate"
         echo "GENERATE_PATH=${GENERATE_PATH}" >> $GITHUB_ENV
         echo "IPADDR=$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
-        
 
     - name: 读取自定义文件
       run: |
