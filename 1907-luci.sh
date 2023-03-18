@@ -1,12 +1,12 @@
 #!/bin/bash
-#=================================================
-# Description: DIY script
-# Lisence: MIT
-# Author: eSirPlayground
-# Youtube Channel: https://goo.gl/fvkdwm 
-#=================================================
-#1. Modify default IP
-sed -i 's/192.168.1.1/192.168.2.2/g' package/base-files/files/bin/config_generate
+#======================================================
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+# DIY扩展二合一了，在此处可以增加插件,可修改IP,修改源码
+#======================================================
 
-#2. Clear the login password
-sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' package/lean/default-settings/files/zzz-default-settings
+
+#1. 修改固件后台IP,把'192.168.2.2'改成您想要的就行
+sed -i 's/${IPADDR}/192.168.2.2/g' "${GENERATE_PATH}"
+
+#2. 固件免密登录设置
+[[ -n "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
