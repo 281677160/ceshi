@@ -75,11 +75,11 @@ Trigger packaging ${SOURCE} program-$(date +%Y%m%d%H%M%S)
 EOF
 
 cat >"${TRIGGER_PROGRAM}/start.ini" <<-EOF
-openwrt_board="${openwrt_board}"
-openwrt_kernel="${openwrt_kernel}"
+amlogic_model="${amlogic_model}"
+amlogic_kernel="${amlogic_kernel}"
 auto_kernel="${auto_kernel}"
 kernel_repo="${kernel_repo}"
-openwrt_size="${openwrt_size}"
+rootfs_size="${rootfs_size}"
 SOURCE="${SOURCE}"
 EOF
 
@@ -87,5 +87,5 @@ chmod -R +x ${FOLDER_NAME}
 cd ${FOLDER_NAME}
 git add .
 git commit -m "Trigger packaging ${SOURCE} program"
-git push --force "https://${GH_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
+git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
