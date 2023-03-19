@@ -56,6 +56,11 @@ on:
         required: false
         default: 'true'
         type: boolean
+      UPDATE_FIRMWARE_ONLINE:
+        description: 'Armvirt_64自动打包成img固件'
+        required: false
+        default: 'true'
+        type: boolean
         
 # 定时触发开启开始编译(把下面两个#去掉开启)
 #  schedule:
@@ -158,7 +163,6 @@ jobs:
         [[ -d "$GITHUB_WORKSPACE/files" ]] && mv -f $GITHUB_WORKSPACE/files/* files
         [[ -d "$GITHUB_WORKSPACE/patches" ]] && \
         find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        sudo chmod +x $GITHUB_WORKSPACE/relevance/packaging_program.sh
         sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]] && \
@@ -262,10 +266,16 @@ jobs:
         replacesArtifacts: true
         artifacts: "${{ env.FIRMWARE_PATH }}/${{ env.FIRMWARE }}"
         
-    - name: 触发打包.yml文件启动工作
-      if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
+    - name: 触发Armvirt_64自动打包成img固件
+      if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN && env.UPDATE_FIRMWARE_ONLINE == 'true'
       run: |
-        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Packaged_services
+        if [[ -f "$GITHUB_WORKSPACE/relevance/packaging_program.sh"  ]]; then
+          sudo chmod +x $GITHUB_WORKSPACE/relevance/packaging_program.sh
+          source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Packaged_services
+        else
+          echo "relevance文件夹内不存在packaging_program.sh文件"
+          exit 1
+        fi
 
     - name: 清理Artifacts
       if: env.REPO_TOKEN
@@ -273,7 +283,7 @@ jobs:
       with:
           token: ${{ secrets.REPO_TOKEN }}
           repository: ${{ github.repository }}
-          retain_days: ${{ inputs.days }}
+          retain_days: ${{ env.RETAIN_DAYS }}
           keep_minimum_runs: 0
     
     - name: 删除releases
@@ -281,7 +291,7 @@ jobs:
       uses: danshui-git/delete-older-releases@main
       with:
         repo: ${{ github.repository }}
-        keep_latest: ${{ inputs.rele }}
+        keep_latest: ${{ env.KEEP_LATEST }}
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
