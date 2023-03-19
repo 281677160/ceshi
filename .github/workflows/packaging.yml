@@ -9,71 +9,14 @@ on:
         description: 'Select the source branch'
         required: true
         default: 'lede'
-        type: choice
-        options:
-          - 'lede'
-          - 'lede'
-          - 'lede'
       openwrt_board:
         description: "Select device board"
         required: true
         default: 'all'
-        type: choice
-        options:
-          - 'all'
-          - 's922x_s905x3_s905d_s912_s905l3a'
-          - 'r66s_r68s_h66k_h68k_e25'
-          - 'eaidk-610_king3399_tn3399_kylin3399'
-          - 'vplus_tqc-a01_tanix-tx6'
-          - 'a311d'
-          - 's922x'
-          - 's922x-reva'
-          - 's922x-ct2000'
-          - 's905x3'
-          - 's905x3-b'
-          - 's905x2'
-          - 's912'
-          - 's912-m8s'
-          - 's905d'
-          - 's905d-ki'
-          - 's905x'
-          - 's905w'
-          - 's905'
-          - 's905l2'
-          - 's905l3'
-          - 's905l3a'
-          - 's905l3b'
-          - 's905lb-r3300l'
-          - 'rock5b'
-          - 'h88k'
-          - 'r66s'
-          - 'r68s'
-          - 'h66k'
-          - 'h68k'
-          - 'e25'
-          - 'eaidk-610'
-          - 'king3399'
-          - 'tn3399'
-          - 'kylin3399'
-          - 'beikeyun'
-          - 'l1pro'
-          - 'vplus'
-          - 'tqc-a01'
-          - 'tanix-tx6'
       openwrt_kernel:
         description: "Select kernel version"
         required: true
         default: '5.15.85_6.1.1'
-        type: choice
-        options:
-          - '5.4.225_5.10.160_5.15.85'
-          - '5.4.225_5.10.160'
-          - '5.10.160_5.15.85'
-          - '5.15.85_6.1.1'
-          - '5.4.225'
-          - '5.10.160'
-          - '5.15.85'
-          - '6.1.1'
       auto_kernel:
         description: "Auto use the latest kernel"
         required: true
