@@ -188,8 +188,6 @@ jobs:
         [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
         cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
         echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
-        [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]] && \
-        echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
 
     - name: 下载软件源
       id: package
