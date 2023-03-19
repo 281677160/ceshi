@@ -50,18 +50,15 @@ exit 0
 
 
 function Packaged_services() {
-git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git config --global user.name "github-actions[bot]"
-
 FOLDER_NAME="${GITHUB_WORKSPACE}/REPOSITORY"
-TRIGGER_PROGRAM="${FOLDER_NAME}/trigger-program"
+TRIGGER_PROGRAM="${FOLDER_NAME}/relevance"
 git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
 
 [[ ! -d "${TRIGGER_PROGRAM}" ]] && mkdir -p "${TRIGGER_PROGRAM}"
 
-YML_PATH="${FOLDER_NAME}/.github/workflows/use-releases-file-to-packaging.yml"
+YML_PATH="${FOLDER_NAME}/.github/workflows/packaging.yml"
 PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep -Eo "\- '.*'" |cut -d"'" -f2 |awk 'NR==1')"
-PATHS2="trigger-program/${SOURCE}start"
+PATHS2="relevance/start"
 SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |cut -d' ' -f2)"
 SOURCE_NAME2="${SOURCE}"
 
@@ -69,15 +66,15 @@ if [[ -n "${PATHS1}" ]] && [[ -n "${SOURCE_NAME1}" ]]; then
   sed -i "s?${PATHS1}?${PATHS2}?g" "${YML_PATH}"
   sed -i "s?${SOURCE_NAME1}?${SOURCE_NAME2}?g" "${YML_PATH}"
 else
-  echo "获取变量失败,请勿胡乱修改use-releases-file-to-packaging.yml文件和文件名称"
+  echo "获取变量失败,请勿胡乱修改packaging.yml文件和文件名称"
   exit 1
 fi
 
-cat >"${TRIGGER_PROGRAM}/${SOURCE}start" <<-EOF
+cat >"${TRIGGER_PROGRAM}/start" <<-EOF
 Trigger packaging ${SOURCE} program-$(date +%Y%m%d%H%M%S)
 EOF
 
-cat >"${TRIGGER_PROGRAM}/${SOURCE}.ini" <<-EOF
+cat >"${TRIGGER_PROGRAM}/start.ini" <<-EOF
 openwrt_board="${openwrt_board}"
 openwrt_kernel="${openwrt_kernel}"
 auto_kernel="${auto_kernel}"
