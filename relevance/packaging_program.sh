@@ -32,6 +32,7 @@ auto_kernel="${auto_kernel}"
 kernel_repo="${kernel_repo}"
 rootfs_size="${rootfs_size}"
 SOURCE="${SOURCE}"
+LUCI_VERSION="${LUCI_VERSION}"
 EOF
 
 chmod -R +x ${FOLDER_NAME}
