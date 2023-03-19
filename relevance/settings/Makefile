@@ -31,6 +31,9 @@ define Build/Prepare
 		po2lmo $(po) $(PKG_BUILD_DIR)/$(patsubst %.po,%.lmo,$(notdir $(po)));)
 endef
 
+define Build/Configure
+endef
+
 define Build/Compile
 endef
 
