@@ -239,6 +239,9 @@ jobs:
           echo "FILE_TAG=targz" >> $GITHUB_ENV
           mv -f *.tar.gz ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
           mv -f ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz ${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
+        elif [[ "${TARGET_PROFILE}" == "Armvirt_64" ]] && [[ `ls -1 | grep -c ".tar.gz"` -eq '0' ]]; then
+          echo "PACKAGING_FIRMWARE=false" >> $GITHUB_ENV
+          echo "没发现rootfs.tar.gz包存在,关闭触发Armvirt_64自动打包成img固件"
         fi
         sudo rm -rf ipk/*
         cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
