@@ -160,6 +160,8 @@ jobs:
     - name: 读取扩展文件
       run: |
         cd openwrt
+        svn export https://github.com/281677160/common-main/trunk/OFFICIAL/default-settings ${HOME_PATH}/package/default-settings
+        
         ./scripts/feeds update -a > /dev/null 2>&1
         [[ -f "$GITHUB_WORKSPACE/feeds.conf.default" ]] && mv -f $GITHUB_WORKSPACE/feeds.conf.default feeds.conf.default
         [[ -d "$GITHUB_WORKSPACE/diy" ]] && cp -Rf $GITHUB_WORKSPACE/diy/* $GITHUB_WORKSPACE/openwrt/
@@ -169,7 +171,6 @@ jobs:
         sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
-          [[ ! -f "${ZZZ_PATH}" ]] && cp -Rf $GITHUB_WORKSPACE/relevance/settings ${HOME_PATH}/package/default-settings
           cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
           sudo chmod +x ${HOME_PATH}/zh_Hans.sh
           /bin/bash ${HOME_PATH}/zh_Hans.sh
