@@ -168,10 +168,12 @@ jobs:
         find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
         sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
-        [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]] && \
-        cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh && \
-        sudo chmod +x ${HOME_PATH}/zh_Hans.sh && \
-        /bin/bash ${HOME_PATH}/zh_Hans.sh
+        if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
+          sed -i 's?PACKAGES.router:=?PACKAGES.router:=luci @LUCI_LANG_zh-cn ?g' "include/target.mk"
+          cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
+          sudo chmod +x ${HOME_PATH}/zh_Hans.sh
+          /bin/bash ${HOME_PATH}/zh_Hans.sh
+        fi
         echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
         echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
         echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
