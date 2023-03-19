@@ -8,7 +8,7 @@ on:
       source_branch:
         description: 'Select the source branch'
         required: true
-        default: 'lede'
+        default: 'coolsnowwolf/lede'
       amlogic_model:
         description: "Select device board"
         required: true
@@ -60,7 +60,7 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         if [[ -n "${{ github.event.inputs.openwrt_board }}" ]]; then
-          echo "SOURCE=${{ inputs.source_branch }}" >> ${GITHUB_ENV}
+          echo "SOURCE="$(echo "${{ inputs.source_branch }}" |cut -d"/" -f1)"" >> ${GITHUB_ENV}
           echo "amlogic_model=${{ inputs.amlogic_model }}" >> ${GITHUB_ENV}
           echo "amlogic_kernel=${{ inputs.amlogic_kernel }}" >> ${GITHUB_ENV}
           echo "auto_kernel=${{ inputs.auto_kernel }}" >> ${GITHUB_ENV}
