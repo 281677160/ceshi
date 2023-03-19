@@ -42,7 +42,6 @@ on:
 
 env:
   GIT_REPOSITORY: ${{github.repository}}
-  TZ: America/New_York
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   SOURCE: immortalwrt
 
