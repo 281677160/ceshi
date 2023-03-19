@@ -22,7 +22,7 @@ on:
         required: true
         default: ''
       CONFIG_FILE:
-        description: '请输入set_config文件夹里的配置文件名称'
+        description: '请输入[set-config]文件夹里的配置文件名称'
         required: true
         default: ''
       DIY_PART_SH:
