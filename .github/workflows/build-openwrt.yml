@@ -161,6 +161,8 @@ jobs:
         sudo chmod +x $GITHUB_WORKSPACE/relevance/packaging_program.sh
         sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
+        [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]] && \
+        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Convert_language
         echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
         echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
         echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
@@ -170,9 +172,6 @@ jobs:
     - name: 安装源码插件源
       run: |
         cd openwrt
-        if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
-          source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Convert_language
-        fi
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
