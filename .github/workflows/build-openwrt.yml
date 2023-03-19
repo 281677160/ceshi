@@ -170,7 +170,14 @@ jobs:
         ./scripts/feeds install -a
         [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
         cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
-        echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
+        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
+        echo "TARGET_BOARD=${TARGET_BOARD}" >> $GITHUB_ENV
+        echo "TARGET_SUBTARGET=${TARGET_SUBTARGET}" >> $GITHUB_ENV
+        echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
+        [[ "${TARGET_BOARD}" == "armvirt" ]] && \
+        echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
+        echo "FIRMWA=*" >> $GITHUB_ENV
 
     - name: 下载软件源
       id: package
@@ -180,8 +187,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
-        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
         echo "FIRMWARE_PATH=${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
         if [[ `grep -c 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
@@ -210,13 +215,25 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
-        echo "FILE_DATE=$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
         echo "date=$(date +'%m.%d')" >> $GITHUB_ENV
         cd "${FIRMWARE_PATH}"
         mkdir -p ipk
         cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
         sudo tar -czf ipk.tar.gz ipk && sync
+        if [[ "${TARGET_PROFILE}" == "Armvirt_64" ]]; then
+          if [[ `ls -1 |grep -c ".*.tar.gz"` -eq '1' ]]; then
+            echo "FILE_DATE=targz" >> $GITHUB_ENV
+            echo "UPLOAD_RELEASE=true" >> $GITHUB_ENV
+            echo "FIRMWARE=*rootfs.tar.gz" >> $GITHUB_ENV
+            mv -f *.tar.gz ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
+            mv -f ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz ${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
+          fi
+        else
+         echo "FILE_DATE=$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
+         echo "FIRMWARE=*" >> $GITHUB_ENV
+        fi
         sudo rm -rf ipk profiles.json packages
+          
 
     - name: 上传固件至Artifacts
       if: steps.compile.outcome == 'success'&& env.UPLOAD_FIRMWARE == 'true' && !cancelled()
@@ -233,6 +250,7 @@ jobs:
         tag: ${{ env.FILE_DATE }}
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
+        replacesArtifacts: true
         artifacts: "${{ env.FIRMWARE_PATH }}/*"
 
     - name: 清理Artifacts
