@@ -169,7 +169,7 @@ jobs:
         sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
-          sed -i 's?PACKAGES.router:=?PACKAGES.router:=luci luci-compat LUCI_LANG_zh_Hans ?g' "include/target.mk"
+          [[ ! -f "${ZZZ_PATH}" ]] && cp -Rf $GITHUB_WORKSPACE/relevance/settings ${HOME_PATH}/package/default-settings
           cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
           sudo chmod +x ${HOME_PATH}/zh_Hans.sh
           /bin/bash ${HOME_PATH}/zh_Hans.sh
@@ -188,6 +188,8 @@ jobs:
         [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
         cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
         echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
+        echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
+        echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
 
     - name: 下载软件源
       id: package
