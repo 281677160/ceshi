@@ -170,13 +170,8 @@ jobs:
         ./scripts/feeds install -a
         [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
         cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
-        make defconfig
-        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
-        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
-        echo "TARGET_BOARD=${TARGET_BOARD}" >> $GITHUB_ENV
-        echo "TARGET_SUBTARGET=${TARGET_SUBTARGET}" >> $GITHUB_ENV
         echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
-        [[ "${TARGET_BOARD}" == "armvirt" ]] && \
+        [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]] && \
         echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
 
     - name: 下载软件源
@@ -187,6 +182,8 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
         echo "FIRMWARE_PATH=${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
         if [[ `grep -c 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
