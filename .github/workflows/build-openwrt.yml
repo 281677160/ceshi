@@ -71,12 +71,6 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
-  # 定时编译的话，修改控制于以上为准
-  DIY_SOURCE: diy
-  DIY_FILES: files
-  DIY_PATCH: patches
-  FEEDS_CONF: feeds.conf.default
-  TZ: Asia/Shanghai
 
 jobs:
   build:
@@ -128,7 +122,7 @@ jobs:
         sudo -E apt-get -qq install -y rename pigz libfuse-dev
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
-        sudo timedatectl set-timezone "$TZ"
+        sudo timedatectl set-timezone "Asia/Shanghai"
         sudo mkdir -p /${{ env.DIY_WORK }}
         sudo chown $USER:$GROUPS /${{ env.DIY_WORK }}
 
@@ -148,11 +142,11 @@ jobs:
       run: |
         cd openwrt
         ./scripts/feeds update -a > /dev/null 2>&1
-        [[ -f "$GITHUB_WORKSPACE/${{ env.FEEDS_CONF }}" ]] && mv -f $GITHUB_WORKSPACE/${{ env.FEEDS_CONF }} feeds.conf.default
-        [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_SOURCE }}" ]] && cp -Rf $GITHUB_WORKSPACE/${{ env.DIY_SOURCE }}/* $GITHUB_WORKSPACE/openwrt/
-        [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_FILES }}" ]] && mv -f $GITHUB_WORKSPACE/${{ env.DIY_FILES }}/* files
-        [[ -d "$GITHUB_WORKSPACE/${{ env.DIY_PACTH }}" ]] && \
-        find "$GITHUB_WORKSPACE/${{ env.DIY_PACTH }}" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
+        [[ -f "$GITHUB_WORKSPACE/feeds.conf.default" ]] && mv -f $GITHUB_WORKSPACE/feeds.conf.default feeds.conf.default
+        [[ -d "$GITHUB_WORKSPACE/diy" ]] && cp -Rf $GITHUB_WORKSPACE/diy/* $GITHUB_WORKSPACE/openwrt/
+        [[ -d "$GITHUB_WORKSPACE/files" ]] && mv -f $GITHUB_WORKSPACE/files/* files
+        [[ -d "$GITHUB_WORKSPACE/patches" ]] && \
+        find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
         chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
 
