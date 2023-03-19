@@ -178,7 +178,6 @@ jobs:
     - name: 安装源码插件源
       run: |
         cd openwrt
-        ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
         [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
