@@ -8,10 +8,10 @@ git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
 [[ ! -d "${TRIGGER_PROGRAM}" ]] && mkdir -p "${TRIGGER_PROGRAM}"
 
 YML_PATH="${FOLDER_NAME}/.github/workflows/packaging.yml"
-PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep -Eo "\- '.*'" |cut -d"'" -f2 |awk 'NR==1')"
-PATHS2="relevance/start"
-SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |cut -d' ' -f2)"
-SOURCE_NAME2="${SOURCE}"
+PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep -Eo "\- '.*'" |awk 'NR==1')"
+PATHS2="- 'relevance/start'"
+SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
+SOURCE_NAME2="SOURCE: ${SOURCE}"
 
 if [[ -n "${PATHS1}" ]] && [[ -n "${SOURCE_NAME1}" ]]; then
   sed -i "s?${PATHS1}?${PATHS2}?g" "${YML_PATH}"
