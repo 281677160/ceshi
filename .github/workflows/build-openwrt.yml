@@ -85,14 +85,8 @@ jobs:
       
     - name: 读取变量
       run: |
-        export SOURCE="$(echo "${{ inputs.REPO_URL }}" |cut -d"/" -f1)"
-        export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
-        export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
         echo "GIT_REPOSITORY=${{github.repository}}" >> $GITHUB_ENV
         echo "GH_TOKEN=${{ secrets.GH_TOKEN }}" >> $GITHUB_ENV
-        echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
-        echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
-        echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
         if [[ -n "${{ inputs.REPO_URL }}" ]]; then
           echo "REPO_URL=https://github.com/${{ inputs.REPO_URL }}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
@@ -103,6 +97,12 @@ jobs:
           echo "UPLOAD_FIRMWARE=${{ inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${{ inputs.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
+          export SOURCE="$(echo "${{ inputs.REPO_URL }}" |cut -d"/" -f1)"
+          export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
+          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
+          echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
+          echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
+          echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
         else
           echo "REPO_URL=https://github.com/${REPO_URL}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${REPO_BRANCH}" >> ${GITHUB_ENV}
@@ -113,6 +113,12 @@ jobs:
           echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${CACHEWRTBUILD_SWITCH}" >> ${GITHUB_ENV}
+          export SOURCE="$(echo "${{ env.REPO_URL }}" |cut -d"/" -f1)"
+          export LUCI_VERSION="$(echo "${{ env.REPO_BRANCH }}" |cut -d"-" -f2-)"
+          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
+          echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
+          echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
+          echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
         fi
 
     - name: 部署编译环境
