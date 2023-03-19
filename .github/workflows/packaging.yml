@@ -67,7 +67,7 @@ jobs:
           echo "kernel_repo=${{ inputs.kernel_repo }}" >> ${GITHUB_ENV}
           echo "rootfs_size=${{ inputs.rootfs_size }}" >> ${GITHUB_ENV}
         else
-          source trigger-program/${{ env.SOURCE }}.ini
+          source relevance/start.ini
           echo "SOURCE=${SOURCE}" >> ${GITHUB_ENV}
           echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
           echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
