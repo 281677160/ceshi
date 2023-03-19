@@ -56,7 +56,7 @@ on:
         required: false
         default: 'true'
         type: boolean
-      UPDATE_FIRMWARE_ONLINE:
+      PACKAGING_FIRMWARE:
         description: 'Armvirt_64自动打包成img固件'
         required: false
         default: 'true'
@@ -78,6 +78,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
+  PACKAGING_FIRMWARE: true
 
 jobs:
   build:
@@ -102,6 +103,7 @@ jobs:
           echo "UPLOAD_FIRMWARE=${{ inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${{ inputs.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
+          echo "PACKAGING_FIRMWARE=${{ inputs.PACKAGING_FIRMWARE }}" >> ${GITHUB_ENV}
           export SOURCE="$(echo "${{ inputs.REPO_URL }}" |cut -d"/" -f1)"
           export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
           export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
@@ -118,6 +120,7 @@ jobs:
           echo "UPLOAD_FIRMWARE=${{ env.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ env.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${{ env.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
+          echo "PACKAGING_FIRMWARE=${{ env.PACKAGING_FIRMWARE }}" >> ${GITHUB_ENV}
           export SOURCE="$(echo "${{ env.REPO_URL }}" |cut -d"/" -f1)"
           export LUCI_VERSION="$(echo "${{ env.REPO_BRANCH }}" |cut -d"-" -f2-)"
           export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
@@ -266,7 +269,7 @@ jobs:
         artifacts: "${{ env.FIRMWARE_PATH }}/${{ env.FIRMWARE }}"
         
     - name: 触发Armvirt_64自动打包成img固件
-      if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN && env.UPDATE_FIRMWARE_ONLINE == 'true'
+      if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN && env.PACKAGING_FIRMWARE == 'true'
       run: |
         if [[ -f "$GITHUB_WORKSPACE/relevance/packaging_program.sh"  ]]; then
           sudo chmod +x $GITHUB_WORKSPACE/relevance/packaging_program.sh
