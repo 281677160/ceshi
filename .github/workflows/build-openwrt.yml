@@ -156,7 +156,7 @@ jobs:
         [[ -d "$GITHUB_WORKSPACE/files" ]] && mv -f $GITHUB_WORKSPACE/files/* files
         [[ -d "$GITHUB_WORKSPACE/patches" ]] && \
         find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        sudo chmod +x relevance/packaging_program.sh
+        sudo chmod +x $GITHUB_WORKSPACE/relevance/packaging_program.sh
         sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
@@ -168,7 +168,7 @@ jobs:
       run: |
         cd openwrt
         if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
-          source relevance/packaging_program.sh && Packaged_services
+          source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Packaged_services
         fi
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
@@ -261,7 +261,7 @@ jobs:
     - name: 触发打包.yml文件启动工作
       if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       run: |
-        source relevance/packaging_program.sh && Packaged_services
+        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Packaged_services
 
     - name: 清理Artifacts
       if: env.REPO_TOKEN
