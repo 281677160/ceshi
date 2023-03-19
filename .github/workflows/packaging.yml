@@ -9,11 +9,11 @@ on:
         description: 'Select the source branch'
         required: true
         default: 'lede'
-      openwrt_board:
+      amlogic_model:
         description: "Select device board"
         required: true
-        default: 'all'
-      openwrt_kernel:
+        default: 's905d'
+      amlogic_kernel:
         description: "Select kernel version"
         required: true
         default: '5.15.85_6.1.1'
@@ -25,7 +25,7 @@ on:
         options:
           - 'true'
           - 'false'
-      openwrt_size:
+      rootfs_size:
         description: "Set the rootfs size(Unit: MiB)"
         required: true
         default: '1024'
