@@ -278,6 +278,7 @@ jobs:
         fi
 
     - name: 清理Artifacts
+      continue-on-error: true
       if: env.REPO_TOKEN
       uses: Mattraks/delete-workflow-runs@v2
       with:
@@ -287,6 +288,7 @@ jobs:
           keep_minimum_runs: 0
     
     - name: 删除releases
+      continue-on-error: true
       if: env.REPO_TOKEN
       uses: danshui-git/delete-older-releases@main
       with:
