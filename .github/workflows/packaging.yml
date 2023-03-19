@@ -8,7 +8,7 @@ on:
       source_branch:
         description: 'Select the source branch'
         required: true
-        default: 'coolsnowwolf/lede'
+        default: 'coolsnowwolf/immortalwrt'
       amlogic_model:
         description: "Select device board"
         required: true
@@ -38,13 +38,13 @@ on:
     branches:
       - main
     paths:
-      - 'trigger-program/ledestart'
+      - 'relevance/start'
 
 env:
   GIT_REPOSITORY: ${{github.repository}}
   TZ: America/New_York
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-  SOURCE: lede
+  SOURCE: immortalwrt
 
 jobs:
   build:
