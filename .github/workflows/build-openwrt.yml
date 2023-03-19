@@ -222,7 +222,8 @@ jobs:
         sudo tar -czf ipk.tar.gz ipk && sync
         if [[ "${TARGET_PROFILE}" == "Armvirt_64" ]]; then
           if [[ `ls -1 |grep -c ".*.tar.gz"` -eq '1' ]]; then
-            echo "FILE_DATE=targz" >> $GITHUB_ENV
+            echo "FILE_DATE=$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
+            echo "FILE_TAG=targz" >> $GITHUB_ENV
             echo "UPLOAD_RELEASE=true" >> $GITHUB_ENV
             echo "FIRMWARE=*rootfs.tar.gz" >> $GITHUB_ENV
             mv -f *.tar.gz ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
@@ -230,6 +231,7 @@ jobs:
           fi
         else
           echo "FILE_DATE=$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
+          echo "FILE_TAG=$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
           echo "FIRMWARE=*" >> $GITHUB_ENV
         fi
         sudo rm -rf ipk profiles.json packages
@@ -246,7 +248,7 @@ jobs:
       uses: ncipollo/release-action@main
       with:
         name: ${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}
-        tag: ${{ env.FILE_DATE }}
+        tag: ${{ env.FILE_TAG }}
         token: ${{ secrets.REPO_TOKEN }}
         body: ${{ env.FILE_DATE }}
         allowUpdates: true
