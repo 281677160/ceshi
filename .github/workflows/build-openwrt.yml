@@ -156,7 +156,8 @@ jobs:
         [[ -d "$GITHUB_WORKSPACE/files" ]] && mv -f $GITHUB_WORKSPACE/files/* files
         [[ -d "$GITHUB_WORKSPACE/patches" ]] && \
         find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
+        sudo chmod +x relevance/packaging_program.sh
+        sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
         echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
         echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
@@ -167,10 +168,7 @@ jobs:
       run: |
         cd openwrt
         if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
-          wget -q https://raw.githubusercontent.com/281677160/common-main/main/language/zh_Hans.sh -O ${HOME_PATH}/zh_Hans.sh
-          sudo chmod +x ${HOME_PATH}/zh_Hans.sh
-          /bin/bash ${HOME_PATH}/zh_Hans.sh
-          rm -rf ${HOME_PATH}/zh_Hans.sh
+          source relevance/packaging_program.sh && Packaged_services
         fi
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
@@ -248,6 +246,7 @@ jobs:
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: 发布固件到release
+      id: release
       if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
       uses: ncipollo/release-action@main
       with:
@@ -258,6 +257,11 @@ jobs:
         allowUpdates: true
         replacesArtifacts: true
         artifacts: "${{ env.FIRMWARE_PATH }}/${{ env.FIRMWARE }}"
+        
+    - name: 触发打包.yml文件启动工作
+      if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
+      run: |
+        source relevance/packaging_program.sh && Packaged_services
 
     - name: 清理Artifacts
       if: env.REPO_TOKEN
