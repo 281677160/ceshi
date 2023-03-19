@@ -9,7 +9,7 @@
 sed -i 's/${IPADDR}/192.168.2.2/g' "${GENERATE_PATH}"
 
 #2. 固件免密登录设置
-[[ -n "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
+[[ -f "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
 
 # 设置打包固件的机型和内核组合（可用内核是时时变化的,过老的内核就删除的，所以要选择什么内核请看说明）
 # export amlogic_model="此内填入可用芯片，或多芯片组合。比如：s905d 或 s905d_s905x2"
