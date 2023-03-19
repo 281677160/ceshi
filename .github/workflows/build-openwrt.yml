@@ -16,15 +16,15 @@ on:
       REPO_URL:
         description: '请输入您要编译的源码仓库'
         required: true
-        default: 'coolsnowwolf/lede'
+        default: ''
       REPO_BRANCH:
         description: '请输入源码的分支'
         required: true
-        default: 'master'
+        default: ''
       CONFIG_FILE:
         description: '请输入set_config文件夹里的配置文件名称'
         required: true
-        default: 'x86_64'
+        default: ''
       DIY_PART_SH:
         description: '请选择LUCI版本的自定义文件'
         required: true
