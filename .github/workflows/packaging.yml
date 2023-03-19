@@ -1,5 +1,5 @@
 
-name: Use Releases file to Packaging
+name: 打包晶晨固件
 
 on:
   repository_dispatch:
