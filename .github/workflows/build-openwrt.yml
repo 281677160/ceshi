@@ -165,6 +165,7 @@ jobs:
         echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
         echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
         echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
+        echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
 
     - name: 安装源码插件源
       run: |
