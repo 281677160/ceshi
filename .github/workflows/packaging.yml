@@ -104,7 +104,7 @@ jobs:
           echo "请先编译 ${{ env.SOURCE }} 源码的 armvirt-64-default-rootfs.tar.gz 包,再来"
           exit 1
         fi
-        echo "build_name=OpenWrt_${{ env.SOURCE }}_$(date +"%m.%d.%H%M")" >> ${GITHUB_ENV}
+        echo "build_name=${{ env.amlogic_model }}_${{ env.SOURCE }}_$(date +"%m.%d.%H%M")" >> ${GITHUB_ENV}
         echo "build_tag=$(date +"%m%d%H%M%S")" >> ${GITHUB_ENV}
         wget -q https://github.com/${{ env.GIT_REPOSITORY }}/releases/download/targz/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz -O openwrt/openwrt-armvirt-64-default-rootfs.tar.gz
     
