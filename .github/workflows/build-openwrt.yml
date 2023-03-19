@@ -61,11 +61,12 @@ on:
         required: false
         default: 'true'
         type: boolean
-        
+
+
 # 定时触发开启开始编译(把下面两个#去掉开启)
 #  schedule:
 #   - cron: 35 4 * * *
-        
+
 env:
   # 定时编译的话，设置这里的控制为准
   REPO_URL: coolsnowwolf/lede
