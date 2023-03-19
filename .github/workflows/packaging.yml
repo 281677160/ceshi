@@ -43,7 +43,7 @@ on:
 env:
   GIT_REPOSITORY: ${{github.repository}}
   TZ: America/New_York
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   SOURCE: lede
 
 jobs:
@@ -61,27 +61,34 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         if [[ -n "${{ github.event.inputs.openwrt_board }}" ]]; then
           echo "SOURCE=${{ inputs.source_branch }}" >> ${GITHUB_ENV}
-          echo "openwrt_board=${{ inputs.openwrt_board }}" >> ${GITHUB_ENV}
-          echo "openwrt_kernel=${{ inputs.openwrt_kernel }}" >> ${GITHUB_ENV}
+          echo "amlogic_model=${{ inputs.amlogic_model }}" >> ${GITHUB_ENV}
+          echo "amlogic_kernel=${{ inputs.amlogic_kernel }}" >> ${GITHUB_ENV}
           echo "auto_kernel=${{ inputs.auto_kernel }}" >> ${GITHUB_ENV}
           echo "kernel_repo=${{ inputs.kernel_repo }}" >> ${GITHUB_ENV}
-          echo "openwrt_size=${{ inputs.openwrt_size }}" >> ${GITHUB_ENV}
+          echo "rootfs_size=${{ inputs.rootfs_size }}" >> ${GITHUB_ENV}
         else
           source trigger-program/${{ env.SOURCE }}.ini
           echo "SOURCE=${SOURCE}" >> ${GITHUB_ENV}
-          echo "openwrt_board=${openwrt_board}" >> ${GITHUB_ENV}
-          echo "openwrt_kernel=${openwrt_kernel}" >> ${GITHUB_ENV}
+          echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
+          echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
           echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
           echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
-          echo "openwrt_size=${openwrt_size}" >> ${GITHUB_ENV}
+          echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
         fi
       
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        source trigger-program/packaging_program.sh && Build_environment
-        echo "status=success" >> ${GITHUB_OUTPUT}
+        docker rmi `docker images -q`
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc /swapfile
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo -E apt-get -qq install -y rename pigz libfuse-dev
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo mkdir -p /workdir
+        sudo chown $USER:$GROUPS /workdir
     
     - name: 在releases下载 rootfs.tar.gz 压缩包
       working-directory: /workdir
@@ -97,12 +104,12 @@ jobs:
       uses: ophub/amlogic-s9xxx-openwrt@main
       with:
         openwrt_path: openwrt/*rootfs.tar.gz
-        openwrt_board: ${{ env.openwrt_board }}
-        openwrt_kernel: ${{ env.openwrt_kernel }}
+        openwrt_board: ${{ env.amlogic_model }}
+        openwrt_kernel: ${{ env.amlogic_kernel }}
         auto_kernel: ${{ env.auto_kernel }}
         kernel_repo: ${{ env.kernel_repo }}
-        openwrt_size: ${{ env.openwrt_size }}
-        gh_token: ${{ secrets.GH_TOKEN }}
+        openwrt_size: ${{ env.rootfs_size }}
+        gh_token: ${{ secrets.REPO_TOKEN }}
         
     - name: Upload the packaged firmware to Release
       uses: ncipollo/release-action@main
@@ -112,13 +119,8 @@ jobs:
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         removeArtifacts: true
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.REPO_TOKEN }}
         body: |
           This is OpenWrt firmware for Amlogic and Rockchip
           * Firmware information
-          Default IP: 192.168.1.1
-          Default username: root
-          Default password: password
-          Default WIFI name: OpenWrt
-          Default WIFI password: none
           Install to EMMC: Login to OpenWrt → System → Amlogic Service → Install OpenWrt
