@@ -170,6 +170,7 @@ jobs:
         ./scripts/feeds install -a
         [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
         cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
+        make defconfig
         export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
         echo "TARGET_BOARD=${TARGET_BOARD}" >> $GITHUB_ENV
@@ -177,7 +178,6 @@ jobs:
         echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
         [[ "${TARGET_BOARD}" == "armvirt" ]] && \
         echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
-        echo "FIRMWA=*" >> $GITHUB_ENV
 
     - name: 下载软件源
       id: package
@@ -233,7 +233,6 @@ jobs:
           echo "FIRMWARE=*" >> $GITHUB_ENV
         fi
         sudo rm -rf ipk profiles.json packages
-          
 
     - name: 上传固件至Artifacts
       if: steps.compile.outcome == 'success'&& env.UPLOAD_FIRMWARE == 'true' && !cancelled()
@@ -251,7 +250,7 @@ jobs:
         token: ${{ secrets.REPO_TOKEN }}
         allowUpdates: true
         replacesArtifacts: true
-        artifacts: "${{ env.FIRMWARE_PATH }}/*"
+        artifacts: "${{ env.FIRMWARE_PATH }}/${{ env.FIRMWARE }}"
 
     - name: 清理Artifacts
       if: env.REPO_TOKEN
