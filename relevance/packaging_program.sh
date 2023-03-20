@@ -25,7 +25,7 @@ fi
 
 source $GITHUB_WORKSPACE/${DIY_PART_SH}
 
-tions="$(find "$GITHUB_WORKSPACE/openwrt" -type d -name "applications" |grep "luci")"
+tions="$(find "${HOME_PATH}" -type d -name "applications" |grep "luci")"
 if [[ `find "${tions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge "15" ]]; then
   echo "正在进行语言转换"
   cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
