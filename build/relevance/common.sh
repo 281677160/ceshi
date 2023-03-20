@@ -72,8 +72,10 @@ CONFIG_PACKAGE_default-settings-chn=y
 CONFIG_PACKAGE_default-settings=y
 " >> "${HOME_PATH}/.config"
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
+  echo "默认中文LUCI设置完成"
 elif [[ "${Default_Language}" == "1" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
+  echo "默认中文LUCI设置完成"
 fi
 }
 
