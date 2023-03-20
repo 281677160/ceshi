@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016-2023 GitHub 
+# Copyright (C) 2016-2017 GitHub 
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -7,10 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=default-settings
-PKG_VERSION:=2
-PKG_RELEASE:=37
+PKG_VERSION:=1.1
+PKG_RELEASE:=51
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
+
+PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -19,7 +21,7 @@ define Package/default-settings
   CATEGORY:=LuCI
   TITLE:=LuCI support for Default Settings
   PKGARCH:=all
-  DEPENDS:=+luci +luci-base +luci-compat +@LUCI_LANG_zh_Hans
+  DEPENDS:=+@LUCI_LANG_zh-cn +@LUCI_LANG_zh_Hans
 endef
 
 define Package/default-settings/description
