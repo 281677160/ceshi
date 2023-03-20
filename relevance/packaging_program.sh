@@ -45,7 +45,7 @@ echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
 echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
 echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
 
-make defconfig
+make defconfig > /dev/null 2>&1
 TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
 TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
