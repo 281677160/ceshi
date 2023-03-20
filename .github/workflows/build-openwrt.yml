@@ -192,15 +192,8 @@ jobs:
         echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
         echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
         echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
-
-    - name: 下载软件源
-      id: package
-      run: |
-        cd openwrt
+        
         make defconfig
-        make download -j8
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
         export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
         export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
@@ -224,6 +217,15 @@ jobs:
         ccache: 'true'
         mixkey: "${{ env.TARGET_PROFILE }}"
         prefix: ${{ github.workspace }}/openwrt
+
+    - name: 下载软件源
+      id: package
+      run: |
+        cd openwrt
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: 开始编译固件
       id: compile
