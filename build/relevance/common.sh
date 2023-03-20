@@ -66,7 +66,6 @@ if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
 fi
 
 if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
-  sed -i "s?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci default-settings default-settings-chn '?g" ${HOME_PATH}/include/target.mk
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 fi
