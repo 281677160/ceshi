@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function Package_defaultsettings() {
+function Package_settings() {
 ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
 if [[ -d "${ZZZL_PATH}" ]]; then
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
