@@ -77,13 +77,13 @@ echo "FIRMWARE_PATH=${FIRMWARE_PATH}" >> ${GITHUB_ENV}
 }
 
 function Packaged_services() {
-FOLDER_NAME2="${GITHUB_WORKSPACE}/REPOSITORY"
+REPOS_ITORY="${GITHUB_WORKSPACE}/REPOSITORY"
 TRIGGER_PROGRAM="${FOLDER_NAME2}/${FOLDER_NAME}/relevance"
-git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
+git clone -b main https://github.com/${GIT_REPOSITORY}.git ${REPOS_ITORY}
 
 [[ ! -d "${TRIGGER_PROGRAM}" ]] && mkdir -p "${TRIGGER_PROGRAM}"
 
-YML_PATH="${FOLDER_NAME2}/.github/workflows/packaging.yml"
+YML_PATH="${REPOS_ITORY}/.github/workflows/packaging.yml"
 PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep -Eo "\- '.*'" |awk 'NR==1')"
 PATHS2="- '${FOLDER_NAME}/relevance/start'"
 SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
@@ -114,8 +114,8 @@ SOURCE="${SOURCE}"
 LUCI_VERSION="${LUCI_VERSION}"
 EOF
 
-chmod -R +x ${FOLDER_NAME2}
-cd ${FOLDER_NAME2}
+chmod -R +x ${REPOS_ITORY}
+cd ${REPOS_ITORY}
 git add .
 git commit -m "打包${SOURCE}-${amlogic_model}固件"
 git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
