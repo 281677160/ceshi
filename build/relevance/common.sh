@@ -63,7 +63,6 @@ echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
 
 function Diy_config() {
 if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
-  echo "${BUILD_PATH}/${CONFIG_FILE}"
   cp -Rf ${BUILD_PATH}/${CONFIG_FILE} ${HOME_PATH}/.config
 fi
 
