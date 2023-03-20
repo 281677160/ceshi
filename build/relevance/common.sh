@@ -4,9 +4,11 @@ function Package_settings() {
 ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
 if [[ -d "${ZZZL_PATH}" ]]; then
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
+  echo "Default_Language=1" >> $GITHUB_ENV
 else
   cp -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/settings $GITHUB_WORKSPACE/openwrt/package/default-settings
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
+  echo "Default_Language=0" >> $GITHUB_ENV
 fi
 }
 
@@ -58,20 +60,25 @@ echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
 echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
 echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
 echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
-}
 
-
-function Diy_config() {
 if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
   cp -Rf ${BUILD_PATH}/${CONFIG_FILE} ${HOME_PATH}/.config
 fi
 
+if [[ "${Default_Language}" == "0" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
 echo "
 CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_default-settings-chn=y
 CONFIG_PACKAGE_default-settings=y
 " >> "${HOME_PATH}/.config"
+  sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
+elif [[ "${Default_Language}" == "1" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
+  sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
+fi
+}
 
+
+function Diy_config() {
 make defconfig > /dev/null 2>&1
 export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
