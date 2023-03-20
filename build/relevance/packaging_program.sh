@@ -76,6 +76,22 @@ echo "TARGET_PROFILE=${TARGET_PROFILE}" >> ${GITHUB_ENV}
 echo "FIRMWARE_PATH=${FIRMWARE_PATH}" >> ${GITHUB_ENV}
 }
 
+function Diy_armvirt() {
+if [[ "${TARGET_PROFILE}" == "Armvirt_64" ]]; then
+  if [[ `ls -1 |grep -v "ipk" |grep -c ".tar.gz"` -eq '1' ]]; then
+    echo "FIRMWARE=*rootfs.tar.gz" >> $GITHUB_ENV
+    echo "UPLOAD_RELEASE=true" >> $GITHUB_ENV
+    echo "FILE_TAG=targz" >> $GITHUB_ENV
+    echo "FILE_NAME=armvirt-64-default-rootfs.tar.gz" >> $GITHUB_ENV
+    mv -f *.tar.gz ipk/${SOURCE}-armvirt-64-default-rootfs.tar.gz
+    mv -f ipk/${SOURCE}-armvirt-64-default-rootfs.tar.gz ${SOURCE}-armvirt-64-default-rootfs.tar.gz
+  else
+    echo "PACKAGING_FIRMWARE=false" >> $GITHUB_ENV
+    echo "没发现rootfs.tar.gz包存在,关闭触发Armvirt_64自动打包成img固件"
+  fi
+fi
+}
+
 function Packaged_services() {
 REPOS_ITORY="${GITHUB_WORKSPACE}/REPOSITORY"
 TRIGGER_PROGRAM="${REPOS_ITORY}/${FOLDER_NAME}/relevance"
