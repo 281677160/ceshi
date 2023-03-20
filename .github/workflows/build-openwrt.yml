@@ -168,6 +168,9 @@ jobs:
         ./scripts/feeds install -a
         source ${RELEVANCE_PATH}/common.sh && Diy_config
         
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@main
+        
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
       uses: stupidloud/cachewrtbuild@main
@@ -184,9 +187,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-        
-    - name: SSH远程连接（制作.config配置文件）
-      uses: danshui-git/debugger-action@main
 
     - name: 开始编译固件
       id: compile
