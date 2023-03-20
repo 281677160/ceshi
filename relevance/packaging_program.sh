@@ -24,11 +24,15 @@ if [[ -d "$GITHUB_WORKSPACE/patches" ]]; then
 fi
 sudo chmod +x $GITHUB_WORKSPACE/${DIY_PART_SH}
 source $GITHUB_WORKSPACE/${DIY_PART_SH}
-if [[ "${DIY_PART_SH}" == "1907-luci.sh" ]]; then
+
+tions="$(find "$GITHUB_WORKSPACE/openwrt" -type d -name "applications" |grep "luci")"
+if [[ `find "${tions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge "15" ]]; then
+  echo "正在进行语言转换"
   cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
   sudo chmod +x ${HOME_PATH}/zh_Hans.sh
   /bin/bash ${HOME_PATH}/zh_Hans.sh
 fi
+
 echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
 echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
 echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
