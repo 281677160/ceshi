@@ -152,6 +152,7 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /${{ env.DIY_WORK }}/openwrt $GITHUB_WORKSPACE/openwrt
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
+        sudo chmod +x $GITHUB_WORKSPACE/${DIY_PART_SH}
         cp -Rf $GITHUB_WORKSPACE/relevance/packaging_program.sh $GITHUB_WORKSPACE/openwrt/packaging_program.sh
         sudo chmod +x $GITHUB_WORKSPACE/openwrt/packaging_program.sh
         source $GITHUB_WORKSPACE/openwrt/packaging_program.sh && Package_defaultsettings
