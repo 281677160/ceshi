@@ -36,6 +36,39 @@ echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
 echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
 }
 
+
+function Diy_config() {
+if [[ -f "$GITHUB_WORKSPACE/$CONFIG_FILE}" ]]; then
+  cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${HOME_PATH}/.config
+fi
+echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
+echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
+echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
+
+make defconfig
+TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
+TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
+FIRMWARE_PATH="${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
+if [[ `grep -c 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+  echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
+elif [[ `grep -c 'CONFIG_TARGET_x86=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+  echo "TARGET_PROFILE=x86-32" >> $GITHUB_ENV
+elif [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+  echo "TARGET_PROFILE=Armvirt_64" >> $GITHUB_ENV
+  echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
+elif [[ `grep -c "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config` -eq '1' ]]; then
+  echo "TARGET_PROFILE=$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')" >> $GITHUB_ENV
+else
+  echo "TARGET_PROFILE=${TARGET_PROFILE_DG}" >> $GITHUB_ENV
+fi
+
+echo "TARGET_BOARD=${TARGET_BOARD}" >> ${GITHUB_ENV}
+echo "TARGET_SUBTARGET=${TARGET_SUBTARGET}" >> ${GITHUB_ENV}
+echo "TARGET_PROFILE=${TARGET_PROFILE}" >> ${GITHUB_ENV}
+echo "FIRMWARE_PATH=${FIRMWARE_PATH}" >> ${GITHUB_ENV}
+}
+
 function Packaged_services() {
 FOLDER_NAME="${GITHUB_WORKSPACE}/REPOSITORY"
 TRIGGER_PROGRAM="${FOLDER_NAME}/relevance"
