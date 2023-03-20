@@ -50,8 +50,14 @@ jobs:
       if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
       run: |
         cd $GITHUB_WORKSPACE
-        rm -fr repogx/relevance/settings
-        svn export https://github.com/281677160/common-main/trunk/OFFICIAL/default-settings repogx/relevance/settings > /dev/null 2>&1
+        mkdir -p repogx/build
+        mv -f repogx/diy repogx/build/diy
+        mv -f repogx/files repogx/build/files
+        mv -f repogx/patches repogx/build/patches
+        mv -f repogx/relevance repogx/build/relevance
+        mv -f repogx/set-config repogx/build/set-config
+        mv -f repogx/1806-luci.sh repogx/build/1806-luci.sh
+        mv -f repogx/1907-luci.sh repogx/build/1907-luci.sh
         
         chmod -R 775 repogx
         cd repogx
