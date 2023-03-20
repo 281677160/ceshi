@@ -41,9 +41,12 @@ function Diy_config() {
 if [[ -f "$GITHUB_WORKSPACE/$CONFIG_FILE}" ]]; then
   cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${HOME_PATH}/.config
 fi
-echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
-echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
-echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
+
+echo "
+CONFIG_PACKAGE_luci=y
+CONFIG_PACKAGE_default-settings-chn=y
+CONFIG_PACKAGE_default-settings=y
+" >> "${HOME_PATH}/.config"
 
 make defconfig > /dev/null 2>&1
 export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
@@ -58,9 +61,9 @@ elif [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq 
   export TARGET_PROFILE="Armvirt_64"
   echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
 elif [[ `grep -c "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-   export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')"
+  export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')"
 else
-   export TARGET_PROFILE="${TARGET_PROFILE_DG}"
+  export TARGET_PROFILE="${TARGET_PROFILE_DG}"
 fi
 
 echo "TARGET_BOARD=${TARGET_BOARD}" >> ${GITHUB_ENV}
