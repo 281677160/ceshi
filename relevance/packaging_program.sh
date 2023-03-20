@@ -46,21 +46,21 @@ echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
 echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
 
 make defconfig > /dev/null 2>&1
-TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
-TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
-TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
-FIRMWARE_PATH="${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
+export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
+export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
+export FIRMWARE_PATH="${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}"
 if [[ `grep -c 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
-  echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
+  export TARGET_PROFILE="x86-64"
 elif [[ `grep -c 'CONFIG_TARGET_x86=y' ${HOME_PATH}/.config` -eq '1' ]]; then
-  echo "TARGET_PROFILE=x86-32" >> $GITHUB_ENV
+  export TARGET_PROFILE="x86-32"
 elif [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
-  echo "TARGET_PROFILE=Armvirt_64" >> $GITHUB_ENV
+  export TARGET_PROFILE="Armvirt_64"
   echo "CONFIG_TARGET_ROOTFS_TARGZ=y" >> "${HOME_PATH}/.config"
 elif [[ `grep -c "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-  echo "TARGET_PROFILE=$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')" >> $GITHUB_ENV
+   export TARGET_PROFILE="$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')"
 else
-  echo "TARGET_PROFILE=${TARGET_PROFILE_DG}" >> $GITHUB_ENV
+   export TARGET_PROFILE="${TARGET_PROFILE_DG}"
 fi
 
 echo "TARGET_BOARD=${TARGET_BOARD}" >> ${GITHUB_ENV}
