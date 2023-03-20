@@ -24,7 +24,6 @@ if [[ -d "${BUILD_PATH}/patches" ]]; then
 fi
 
 source ${BUILD_PATH}/${DIY_PART_SH}
-echo "${BUILD_PATH}/$CONFIG_FILE}"
 
 apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications")"
 if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
