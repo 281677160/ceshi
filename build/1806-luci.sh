@@ -6,10 +6,13 @@
 
 
 #1. 修改固件后台IP,把'192.168.2.2'改成您想要的就行
-sed -i "s/${IPADDR}/192.168.2.2/g" "${GENERATE_PATH}"
+export IPV4_IPADDR="192.168.2.2"
 
 #2. 固件免密登录设置
-[[ -f "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
+export DELETE_LOGIN_PASSWORD="1"
+
+export RETAIN_DAYS="7"
+export KEEP_LATEST="10"
 
 
 # 设置打包固件的机型和内核组合（可用内核是时时变化的,过老的内核就删除的，所以要选择什么内核请看说明）
