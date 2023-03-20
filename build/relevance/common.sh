@@ -26,7 +26,7 @@ source ${BUILD_PATH}/${DIY_PART_SH}
 
 GENERATE_PATH="${HOME_PATH}/package/base-files/files/bin/config_generate"
 IPADDR="$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")"
-if [[ -n "${IPV4_IPADDR}" ]] && [[ `"$(echo ${IPV4_IPADDR} |grep -c '.')"` -eq '3' ]]; then
+if [[ -n "${IPV4_IPADDR}" ]] && [[ `echo "${IPV4_IPADDR}" |grep -c '\.'` -eq '3' ]]; then
   sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
   echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
 else
@@ -66,10 +66,6 @@ if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
 fi
 
 if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
-  cd ${HOME_PATH}
-  echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
-  echo "CONFIG_PACKAGE_default-settings=y" >> ${HOME_PATH}/.config
-  echo "CONFIG_PACKAGE_default-settings-chn=y" >> ${HOME_PATH}/.config
   sed -i "s?DEFAULT_PACKAGES:=?DEFAULT_PACKAGES:=luci default-settings default-settings-chn '?g" ${HOME_PATH}/include/target.mk
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
