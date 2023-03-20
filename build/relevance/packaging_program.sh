@@ -78,7 +78,7 @@ echo "FIRMWARE_PATH=${FIRMWARE_PATH}" >> ${GITHUB_ENV}
 
 function Packaged_services() {
 REPOS_ITORY="${GITHUB_WORKSPACE}/REPOSITORY"
-TRIGGER_PROGRAM="${FOLDER_NAME2}/${FOLDER_NAME}/relevance"
+TRIGGER_PROGRAM="${REPOS_ITORY}/${FOLDER_NAME}/relevance"
 git clone -b main https://github.com/${GIT_REPOSITORY}.git ${REPOS_ITORY}
 
 [[ ! -d "${TRIGGER_PROGRAM}" ]] && mkdir -p "${TRIGGER_PROGRAM}"
