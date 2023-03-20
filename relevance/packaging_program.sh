@@ -5,7 +5,7 @@ ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-set
 if [[ -d "${ZZZL_PATH}" ]]; then
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
 else
-  cp -Rf $GITHUB_WORKSPACE/settings $GITHUB_WORKSPACE/openwrt/package/default-settings
+  cp -Rf $GITHUB_WORKSPACE/relevance/settings $GITHUB_WORKSPACE/openwrt/package/default-settings
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
 fi
 GENERATE_PATH="${GITHUB_WORKSPACE}/openwrt/package/base-files/files/bin/config_generate"
