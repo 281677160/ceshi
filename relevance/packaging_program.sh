@@ -25,11 +25,8 @@ fi
 
 source $GITHUB_WORKSPACE/${DIY_PART_SH}
 
-tions="$(find "$GITHUB_WORKSPACE/openwrt/feeds" -type d -name "applications")"
-echo "${tions}"
-
-if [[ `find "${tions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
-  echo "正在进行语言转换"
+apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications")"
+if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
   cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
   sudo chmod +x ${HOME_PATH}/zh_Hans.sh
   /bin/bash ${HOME_PATH}/zh_Hans.sh
