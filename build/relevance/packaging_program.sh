@@ -88,13 +88,13 @@ PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep
 PATHS2="- '${FOLDER_NAME}/relevance/start'"
 SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
 SOURCE_NAME2="SOURCE: ${SOURCE}"
-FOLDER_NAME1="$(grep 'FOLDER_NAME:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
-FOLDER_NAME2="FOLDER_NAME: ${FOLDER_NAME}"
+FOLDER_NE1="$(grep 'FOLDER_NAME:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
+FOLDER_NE2="FOLDER_NAME: ${FOLDER_NAME}"
 
 if [[ -n "${PATHS1}" ]] && [[ -n "${SOURCE_NAME1}" ]] && [[ -n "${FOLDER_NAME1}" ]]; then
   sed -i "s?${PATHS1}?${PATHS2}?g" "${YML_PATH}"
   sed -i "s?${SOURCE_NAME1}?${SOURCE_NAME2}?g" "${YML_PATH}"
-  sed -i "s?${FOLDER_NAME1}?${FOLDER_NAME2}?g" "${YML_PATH}"
+  sed -i "s?${FOLDER_NE1}?${FOLDER_NE2}?g" "${YML_PATH}"
 else
   echo "获取变量失败,请勿胡乱修改packaging.yml文件和文件名称"
   exit 1
