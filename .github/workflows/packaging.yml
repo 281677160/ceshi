@@ -42,7 +42,7 @@ on:
     branches:
       - main
     paths:
-      - 'relevance/start'
+      - 'build/relevance/start'
 
 env:
   GIT_REPOSITORY: ${{github.repository}}
