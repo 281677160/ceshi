@@ -26,13 +26,9 @@ on:
         required: true
         default: ''
       DIY_PART_SH:
-        description: '请选择LUCI版本的自定义文件'
+        description: '请选择自定义文件名称'
         required: true
-        default: '1806-luci.sh'
-        type: choice
-        options:
-          - '1806-luci.sh'
-          - '1907-luci.sh'
+        default: ''
       FOLDER_NAME:
         description: '编译使用的文件夹名称'
         required: true
