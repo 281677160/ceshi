@@ -168,14 +168,8 @@ jobs:
         ./scripts/feeds install -a
         source ${RELEVANCE_PATH}/common.sh && Diy_config
         
-    - name: 触发Armvirt_64自动打包成img固件
-      run: |
-        if [[ -f "${RELEVANCE_PATH}/common.sh"  ]]; then
-          source ${RELEVANCE_PATH}/common.sh && Packaged_services
-        else
-          echo "${{ env.FOLDER_NAME }}/relevance文件夹内不存在common.sh文件"
-          exit 1
-        fi
+    - name: SSH远程连接（制作.config配置文件）
+      uses: danshui-git/debugger-action@main
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
