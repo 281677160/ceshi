@@ -4,11 +4,9 @@ function Package_settings() {
 ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
 if [[ -d "${ZZZL_PATH}" ]]; then
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
-  echo "Default_Language=1" >> $GITHUB_ENV
 else
   cp -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/settings $GITHUB_WORKSPACE/openwrt/package/default-settings
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
-  echo "Default_Language=0" >> $GITHUB_ENV
 fi
 }
 
@@ -26,11 +24,13 @@ source ${BUILD_PATH}/${DIY_PART_SH}
 
 GENERATE_PATH="${HOME_PATH}/package/base-files/files/bin/config_generate"
 IPADDR="$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")"
-if [[ -n "${IPV4_IPADDR}" ]] && [[ `echo "${IPV4_IPADDR}" |grep -c '\.'` -eq '3' ]]; then
-  sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
-  echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
-else
-  echo "使用源码默认IP：${IPADDR}"
+if [[ -n "${IPV4_IPADDR}" ]]; then
+  if [[ -n "$(echo ${IPV4_IPADDR} |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" ]]; then
+    sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
+    echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
+  else
+    echo "IP格式不正确，使用源码默认IP：${IPADDR}"
+  fi
 fi
 
 if [[ "${DELETE_LOGIN_PASSWORD}" == "1" ]]; then
@@ -48,6 +48,8 @@ if [[ -n "${KEEP_LATEST}" ]]; then
   echo "保留${KEEP_LATEST}releases不被清理"
 fi
 
+echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
+
 apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications")"
 if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
   cp -Rf ${RELEVANCE_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
@@ -60,24 +62,22 @@ echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
 echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
 echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
 echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
+}
 
+
+function Diy_config() {
 if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
   cp -Rf ${BUILD_PATH}/${CONFIG_FILE} ${HOME_PATH}/.config
 fi
 
 if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
-  echo -e "\nCONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
+  echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
   echo "CONFIG_PACKAGE_default-settings=y" >> ${HOME_PATH}/.config
   echo "CONFIG_PACKAGE_default-settings-chn=y" >> ${HOME_PATH}/.config
-  make menuconfig
-
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 fi
-}
 
-
-function Diy_config() {
 make defconfig > /dev/null 2>&1
 export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
