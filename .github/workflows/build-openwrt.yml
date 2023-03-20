@@ -33,14 +33,10 @@ on:
         options:
           - '1806-luci.sh'
           - '1907-luci.sh'
-      RETAIN_DAYS:
-        description: '清理[X]天之前的Artifacts'
+      FOLDER_NAME:
+        description: '编译使用的文件夹名称'
         required: true
-        default: '7'
-      KEEP_LATEST:
-        description: '保留[X]个Releases不被删除'
-        required: true
-        default: '10'
+        default: 'build'
       UPLOAD_FIRMWARE:
         description: '上传固件到 Artifacts'
         required: false
@@ -79,6 +75,7 @@ env:
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
   PACKAGING_FIRMWARE: true
+  FOLDER_NAME: build
 
 jobs:
   build:
@@ -94,6 +91,7 @@ jobs:
         echo "GIT_REPOSITORY=${{github.repository}}" >> $GITHUB_ENV
         echo "REPO_TOKEN=${{ secrets.REPO_TOKEN }}" >> $GITHUB_ENV
         if [[ -n "${{ inputs.REPO_URL }}" ]]; then
+          echo "FOLDER_NAME=${{ inputs.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "REPO_URL=https://github.com/${{ inputs.REPO_URL }}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
           echo "CONFIG_FILE=set-config/${{ inputs.CONFIG_FILE }}" >> ${GITHUB_ENV}
@@ -111,6 +109,7 @@ jobs:
           echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
           echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
         else
+          echo "FOLDER_NAME=${{ env.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "REPO_URL=https://github.com/${{ env.REPO_URL }}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ env.REPO_BRANCH }}" >> ${GITHUB_ENV}
           echo "CONFIG_FILE=set-config/${{ env.CONFIG_FILE }}" >> ${GITHUB_ENV}
@@ -151,16 +150,17 @@ jobs:
         df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /${{ env.DIY_WORK }}/openwrt $GITHUB_WORKSPACE/openwrt
+        cp -Rf $GITHUB_WORKSPACE/${{ env.FOLDER_NAME }} $GITHUB_WORKSPACE/openwrt/build
+        sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
+        echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
+        echo "RELEVANCE_PATH=$GITHUB_WORKSPACE/openwrt/build/relevance" >> $GITHUB_ENV
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
-        sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
-        cp -Rf $GITHUB_WORKSPACE/relevance/packaging_program.sh $GITHUB_WORKSPACE/openwrt/packaging_program.sh
-        sudo chmod +x $GITHUB_WORKSPACE/openwrt/packaging_program.sh
-        source $GITHUB_WORKSPACE/openwrt/packaging_program.sh && Package_defaultsettings
+        source $GITHUB_WORKSPACE/openwrt/build/relevance/packaging_program.sh && Package_defaultsettings
 
     - name: 读取扩展文件
       run: |
         cd openwrt
-        source packaging_program.sh && Diy_partsh
+        source ${RELEVANCE_PATH}/packaging_program.sh && Diy_partsh
 
     - name: 安装源码插件源
       run: |
@@ -168,7 +168,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-        source packaging_program.sh && Diy_config
+        source ${RELEVANCE_PATH}/packaging_program.sh && Diy_config
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
