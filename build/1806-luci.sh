@@ -11,7 +11,13 @@ export IPV4_IPADDR="192.168.2.2"
 #2. 固件免密登录设置
 export DELETE_LOGIN_PASSWORD="1"
 
+#3. 编译时改成默认中文LUCI
+DEFAULT_CHINESE_LANGUAGE="1"
+
+#4. 清理[X]天之前的Artifacts
 export RETAIN_DAYS="7"
+
+#5. 保留[X]个Releases不被删除
 export KEEP_LATEST="10"
 
 
