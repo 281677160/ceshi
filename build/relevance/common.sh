@@ -12,7 +12,6 @@ fi
 
 
 function Diy_partsh() {
-./scripts/feeds update -a > /dev/null 2>&1
 [[ -f "${BUILD_PATH}/feeds.conf.default" ]] && mv -f ${BUILD_PATH}/feeds.conf.default ${HOME_PATH}/feeds.conf.default
 [[ -d "${BUILD_PATH}/diy" ]] && cp -Rf ${BUILD_PATH}/diy/* ${HOME_PATH}/
 [[ -d "${BUILD_PATH}/files" ]] && mv -f ${BUILD_PATH}/files ${HOME_PATH}/files
@@ -40,12 +39,12 @@ fi
 
 if [[ -n "${RETAIN_DAYS}" ]]; then
   echo "RETAIN_DAYS=${RETAIN_DAYS}" >> ${GITHUB_ENV}
-  echo "清除${RETAIN_DAYS}天前的Artifacts"
+  echo "清除${RETAIN_DAYS}天前的Artifacts记录"
 fi
 
 if [[ -n "${KEEP_LATEST}" ]]; then
   echo "KEEP_LATEST=${KEEP_LATEST}" >> ${GITHUB_ENV}
-  echo "保留${KEEP_LATEST}releases不被清理"
+  echo "保留${KEEP_LATEST}个Releases不被清理"
 fi
 
 echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
