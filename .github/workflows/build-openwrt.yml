@@ -152,12 +152,14 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /${{ env.DIY_WORK }}/openwrt $GITHUB_WORKSPACE/openwrt
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
-        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Package_defaultsettings
+        cp -rf $GITHUB_WORKSPACE/relevance/packaging_program.sh openwrt/packaging_program.sh
+        sudo chmod +x openwrt/packaging_program.sh
+        source packaging_program.sh && Package_defaultsettings
 
     - name: 读取扩展文件
       run: |
         cd openwrt
-        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Package_defaultsettings
+        source packaging_program.sh && Package_defaultsettings
 
     - name: 安装源码插件源
       run: |
@@ -165,7 +167,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Diy_config
+        source packaging_program.sh && Diy_config
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
