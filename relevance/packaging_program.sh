@@ -22,7 +22,7 @@ function Diy_partsh() {
 if [[ -d "$GITHUB_WORKSPACE/patches" ]]; then
   find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
 fi
-sudo chmod +x $GITHUB_WORKSPACE/${DIY_PART_SH}
+
 source $GITHUB_WORKSPACE/${DIY_PART_SH}
 
 tions="$(find "$GITHUB_WORKSPACE/openwrt" -type d -name "applications" |grep "luci")"
