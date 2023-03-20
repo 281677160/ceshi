@@ -172,11 +172,10 @@ jobs:
         
     - name: 触发Armvirt_64自动打包成img固件
       run: |
-        if [[ -f "${RELEVANCE_PATH}/packaging_program.sh"  ]]; then
-          sudo chmod +x ${RELEVANCE_PATH}/packaging_program.sh
+        if [[ -f "${RELEVANCE_PATH}/common.sh"  ]]; then
           source ${RELEVANCE_PATH}/common.sh && Packaged_services
         else
-          echo "${{ env.FOLDER_NAME }}/relevance文件夹内不存在packaging_program.sh文件"
+          echo "${{ env.FOLDER_NAME }}/relevance文件夹内不存在common.sh文件"
           exit 1
         fi
         
