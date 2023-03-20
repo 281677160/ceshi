@@ -8,9 +8,6 @@ else
   cp -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/settings $GITHUB_WORKSPACE/openwrt/package/default-settings
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
 fi
-GENERATE_PATH="${GITHUB_WORKSPACE}/openwrt/package/base-files/files/bin/config_generate"
-echo "GENERATE_PATH=${GENERATE_PATH}" >> $GITHUB_ENV
-echo "IPADDR=$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
 }
 
 
@@ -24,6 +21,30 @@ if [[ -d "${BUILD_PATH}/patches" ]]; then
 fi
 
 source ${BUILD_PATH}/${DIY_PART_SH}
+
+GENERATE_PATH="${HOME_PATH}/base-files/files/bin/config_generate"
+IPADDR="$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")"
+if [[ -n "${IPV4_IPADDR}" ]] && [[ "$(echo ${IPV4_IPADDR} |grep -c '\.')" -eq '4' ]]; then
+  sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
+  echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
+else
+  echo "使用源码默认IP：${IPADDR}"
+fi
+
+if [[ "${DELETE_LOGIN_PASSWORD}" == "1" ]]; then
+  [[ -f "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
+  echo "清除登录密码完成"
+fi
+
+if [[ -n "${RETAIN_DAYS}" ]]; then
+  echo "RETAIN_DAYS=${RETAIN_DAYS}" >> ${GITHUB_ENV}
+  echo "清除${RETAIN_DAYS}天前的Artifacts"
+fi
+
+if [[ -n "${KEEP_LATEST}" ]]; then
+  echo "KEEP_LATEST=${KEEP_LATEST}" >> ${GITHUB_ENV}
+  echo "保留${KEEP_LATEST}releases不被清理"
+fi
 
 apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications")"
 if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
