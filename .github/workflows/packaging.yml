@@ -48,6 +48,7 @@ env:
   GIT_REPOSITORY: ${{github.repository}}
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   SOURCE: immortalwrt
+  FOLDER_NAME: build
 
 jobs:
   build:
@@ -70,7 +71,7 @@ jobs:
           echo "kernel_repo=${{ inputs.kernel_repo }}" >> ${GITHUB_ENV}
           echo "rootfs_size=${{ inputs.rootfs_size }}" >> ${GITHUB_ENV}
         else
-          source relevance/start.ini
+          source ${{ env.FOLDER_NAME }}/relevance/start.ini
           echo "SOURCE=${SOURCE}" >> ${GITHUB_ENV}
           echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
           echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
