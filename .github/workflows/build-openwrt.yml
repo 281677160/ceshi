@@ -210,18 +210,6 @@ jobs:
         echo "FIRMWARE=*" >> $GITHUB_ENV
         cd "${FIRMWARE_PATH}"
         mkdir -p ipk
-        if [[ "${TARGET_PROFILE}" == "Armvirt_64" ]] && [[ `ls -1 | grep -c ".tar.gz"` -eq '1' ]]; then
-          echo "FIRMWARE=*rootfs.tar.gz" >> $GITHUB_ENV
-          echo "UPLOAD_RELEASE=true" >> $GITHUB_ENV
-          echo "FILE_TAG=targz" >> $GITHUB_ENV
-          echo "FILE_NAME=armvirt-64-default-rootfs.tar.gz" >> $GITHUB_ENV
-          mv -f *.tar.gz ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
-          mv -f ipk/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz ${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz
-        elif [[ "${TARGET_PROFILE}" == "Armvirt_64" ]] && [[ `ls -1 | grep -c ".tar.gz"` -eq '0' ]]; then
-          echo "PACKAGING_FIRMWARE=false" >> $GITHUB_ENV
-          echo "没发现rootfs.tar.gz包存在,关闭触发Armvirt_64自动打包成img固件"
-        fi
-        sudo rm -rf ipk/*
         cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
         sudo tar -czf ipk.tar.gz ipk && sync
         sudo rm -rf ipk profiles.json packages
@@ -249,11 +237,11 @@ jobs:
     - name: 触发Armvirt_64自动打包成img固件
       if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN && env.PACKAGING_FIRMWARE == 'true'
       run: |
-        if [[ -f "$GITHUB_WORKSPACE/relevance/packaging_program.sh"  ]]; then
-          sudo chmod +x $GITHUB_WORKSPACE/relevance/packaging_program.sh
-          source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Packaged_services
+        if [[ -f "${RELEVANCE_PATH}/packaging_program.sh"  ]]; then
+          sudo chmod +x ${RELEVANCE_PATH}/packaging_program.sh
+          source ${RELEVANCE_PATH}/packaging_program.sh && Packaged_services
         else
-          echo "relevance文件夹内不存在packaging_program.sh文件"
+          echo "${{ env.FOLDER_NAME }}/relevance文件夹内不存在packaging_program.sh文件"
           exit 1
         fi
 
