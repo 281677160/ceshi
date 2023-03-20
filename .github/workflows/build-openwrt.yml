@@ -159,7 +159,7 @@ jobs:
     - name: 读取扩展文件
       run: |
         cd openwrt
-        source packaging_program.sh && Package_defaultsettings
+        source packaging_program.sh && Diy_partsh
 
     - name: 安装源码插件源
       run: |
