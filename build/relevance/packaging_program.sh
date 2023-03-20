@@ -16,18 +16,18 @@ echo "IPADDR=$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -
 
 function Diy_partsh() {
 ./scripts/feeds update -a > /dev/null 2>&1
-[[ -f "$GITHUB_WORKSPACE/feeds.conf.default" ]] && mv -f $GITHUB_WORKSPACE/feeds.conf.default feeds.conf.default
-[[ -d "$GITHUB_WORKSPACE/diy" ]] && cp -Rf $GITHUB_WORKSPACE/diy/* $GITHUB_WORKSPACE/openwrt/
-[[ -d "$GITHUB_WORKSPACE/files" ]] && mv -f $GITHUB_WORKSPACE/files files
-if [[ -d "$GITHUB_WORKSPACE/patches" ]]; then
-  find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
+[[ -f "${BUILD_PATH}/feeds.conf.default" ]] && mv -f ${BUILD_PATH}/feeds.conf.default ${HOME_PATH}/feeds.conf.default
+[[ -d "${BUILD_PATH}/diy" ]] && cp -Rf ${BUILD_PATH}/diy/* ${HOME_PATH}/
+[[ -d "${BUILD_PATH}/files" ]] && mv -f ${BUILD_PATH}/files ${HOME_PATH}/files
+if [[ -d "${BUILD_PATH}/patches" ]]; then
+  find "${BUILD_PATH}/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
 fi
 
-source $GITHUB_WORKSPACE/${DIY_PART_SH}
+source ${BUILD_PATH}/${DIY_PART_SH}
 
 apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications")"
 if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
-  cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
+  cp -Rf ${RELEVANCE_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
   sudo chmod +x ${HOME_PATH}/zh_Hans.sh
   /bin/bash ${HOME_PATH}/zh_Hans.sh
 fi
@@ -41,8 +41,8 @@ echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
 
 
 function Diy_config() {
-if [[ -f "$GITHUB_WORKSPACE/$CONFIG_FILE}" ]]; then
-  cp -Rf $GITHUB_WORKSPACE/${CONFIG_FILE} ${HOME_PATH}/.config
+if [[ -f "${BUILD_PATH}/$CONFIG_FILE}" ]]; then
+  cp -Rf ${BUILD_PATH}/${CONFIG_FILE} ${HOME_PATH}/.config
 fi
 
 echo "
@@ -76,15 +76,15 @@ echo "FIRMWARE_PATH=${FIRMWARE_PATH}" >> ${GITHUB_ENV}
 }
 
 function Packaged_services() {
-FOLDER_NAME="${GITHUB_WORKSPACE}/REPOSITORY"
-TRIGGER_PROGRAM="${FOLDER_NAME}/relevance"
+FOLDER_NAME2="${GITHUB_WORKSPACE}/REPOSITORY"
+TRIGGER_PROGRAM="${FOLDER_NAME2}/${FOLDER_NAME}/relevance"
 git clone -b main https://github.com/${GIT_REPOSITORY}.git ${FOLDER_NAME}
 
 [[ ! -d "${TRIGGER_PROGRAM}" ]] && mkdir -p "${TRIGGER_PROGRAM}"
 
-YML_PATH="${FOLDER_NAME}/.github/workflows/packaging.yml"
+YML_PATH="${FOLDER_NAME2}/.github/workflows/packaging.yml"
 PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep -Eo "\- '.*'" |awk 'NR==1')"
-PATHS2="- 'relevance/start'"
+PATHS2="- '${FOLDER_NAME}/relevance/start'"
 SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
 SOURCE_NAME2="SOURCE: ${SOURCE}"
 
@@ -110,8 +110,8 @@ SOURCE="${SOURCE}"
 LUCI_VERSION="${LUCI_VERSION}"
 EOF
 
-chmod -R +x ${FOLDER_NAME}
-cd ${FOLDER_NAME}
+chmod -R +x ${FOLDER_NAME2}
+cd ${FOLDER_NAME2}
 git add .
 git commit -m "打包${SOURCE}-${amlogic_model}固件"
 git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
