@@ -152,34 +152,12 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /${{ env.DIY_WORK }}/openwrt $GITHUB_WORKSPACE/openwrt
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
-        echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
-        export GENERATE_PATH="${GITHUB_WORKSPACE}/openwrt/package/base-files/files/bin/config_generate"
-        echo "GENERATE_PATH=${GENERATE_PATH}" >> $GITHUB_ENV
-        echo "IPADDR=$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" >> $GITHUB_ENV
+        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Package_defaultsettings
 
     - name: 读取扩展文件
       run: |
         cd openwrt
-        svn export https://github.com/281677160/common-main/trunk/OFFICIAL/default-settings ${HOME_PATH}/package/default-settings
-        
-        ./scripts/feeds update -a > /dev/null 2>&1
-        [[ -f "$GITHUB_WORKSPACE/feeds.conf.default" ]] && mv -f $GITHUB_WORKSPACE/feeds.conf.default feeds.conf.default
-        [[ -d "$GITHUB_WORKSPACE/diy" ]] && cp -Rf $GITHUB_WORKSPACE/diy/* $GITHUB_WORKSPACE/openwrt/
-        [[ -d "$GITHUB_WORKSPACE/files" ]] && mv -f $GITHUB_WORKSPACE/files/* files
-        [[ -d "$GITHUB_WORKSPACE/patches" ]] && \
-        find "$GITHUB_WORKSPACE/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 --forward --no-backup-if-mismatch"
-        sudo chmod +x $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
-        source $GITHUB_WORKSPACE/${{ env.DIY_PART_SH }}
-        if [[ "${{ env.DIY_PART_SH }}" == "1907-luci.sh" ]]; then
-          cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
-          sudo chmod +x ${HOME_PATH}/zh_Hans.sh
-          /bin/bash ${HOME_PATH}/zh_Hans.sh
-        fi
-        echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
-        echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
-        echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
-        echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
-        echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
+        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Package_defaultsettings
 
     - name: 安装源码插件源
       run: |
@@ -187,28 +165,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-        [[ -f "$GITHUB_WORKSPACE/${{ env.CONFIG_FILE }}" ]] && \
-        cp -Rf $GITHUB_WORKSPACE/${{ env.CONFIG_FILE }} ${HOME_PATH}/.config
-        echo "CONFIG_PACKAGE_luci=y" >> "${HOME_PATH}/.config"
-        echo "CONFIG_PACKAGE_default-settings-chn=y" >> "${HOME_PATH}/.config"
-        echo "CONFIG_PACKAGE_default-settings=y" >> "${HOME_PATH}/.config"
-        
-        make defconfig
-        export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
-        export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
-        export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
-        echo "FIRMWARE_PATH=${HOME_PATH}/bin/targets/${TARGET_BOARD}/${TARGET_SUBTARGET}" >> $GITHUB_ENV
-        if [[ `grep -c 'CONFIG_TARGET_x86_64=y' ${HOME_PATH}/.config` -eq '1' ]]; then
-          echo "TARGET_PROFILE=x86-64" >> $GITHUB_ENV
-        elif [[ `grep -c 'CONFIG_TARGET_x86=y' ${HOME_PATH}/.config` -eq '1' ]]; then
-          echo "TARGET_PROFILE=x86-32" >> $GITHUB_ENV
-        elif [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
-          echo "TARGET_PROFILE=Armvirt_64" >> $GITHUB_ENV
-        elif [[ `grep -c "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config` -eq '1' ]]; then
-          echo "TARGET_PROFILE=$(grep -Eo "CONFIG_TARGET.*DEVICE.*=y" ${HOME_PATH}/.config | sed -r 's/.*DEVICE_(.*)=y/\1/')" >> $GITHUB_ENV
-        else
-          echo "TARGET_PROFILE=${TARGET_PROFILE_DG}" >> $GITHUB_ENV
-        fi
+        source $GITHUB_WORKSPACE/relevance/packaging_program.sh && Diy_config
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
