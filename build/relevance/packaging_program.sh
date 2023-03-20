@@ -24,6 +24,7 @@ if [[ -d "${BUILD_PATH}/patches" ]]; then
 fi
 
 source ${BUILD_PATH}/${DIY_PART_SH}
+echo "${BUILD_PATH}/$CONFIG_FILE}"
 
 apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications")"
 if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
@@ -42,6 +43,7 @@ echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
 
 function Diy_config() {
 if [[ -f "${BUILD_PATH}/$CONFIG_FILE}" ]]; then
+  echo "${BUILD_PATH}/$CONFIG_FILE}"
   cp -Rf ${BUILD_PATH}/${CONFIG_FILE} ${HOME_PATH}/.config
 fi
 
