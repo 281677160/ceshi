@@ -66,11 +66,11 @@ if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
 fi
 
 if [[ "${Default_Language}" == "0" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
-echo "
+cat >> "${HOME_PATH}/.config" <<-EOF
 CONFIG_PACKAGE_luci=y
-CONFIG_PACKAGE_default-settings-chn=y
 CONFIG_PACKAGE_default-settings=y
-" >> "${HOME_PATH}/.config"
+CONFIG_PACKAGE_default-settings-chn=y
+EOF
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 elif [[ "${Default_Language}" == "1" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
