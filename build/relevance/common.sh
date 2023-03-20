@@ -66,22 +66,22 @@ if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
 fi
 
 if [[ "${Default_Language}" == "0" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
-cat >> "${HOME_PATH}/.config" <<-EOF
-CONFIG_PACKAGE_luci=y
-CONFIG_PACKAGE_default-settings=y
-CONFIG_PACKAGE_default-settings-chn=y
-EOF
+  cd ${HOME_PATH}
+  echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
+  make defconfig > /dev/null 2>&1
+  echo "CONFIG_PACKAGE_default-settings=y" >> ${HOME_PATH}/.config
+  echo "CONFIG_PACKAGE_default-settings-chn=y" >> ${HOME_PATH}/.config
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 elif [[ "${Default_Language}" == "1" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 fi
-make defconfig > /dev/null 2>&1
 }
 
 
 function Diy_config() {
+make defconfig > /dev/null 2>&1
 export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
 export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
