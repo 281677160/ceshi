@@ -25,7 +25,7 @@ fi
 
 source $GITHUB_WORKSPACE/${DIY_PART_SH}
 
-tions="$(find "${HOME_PATH}" -type d -name "applications" |grep "luci")"
+tions="$(find "$GITHUB_WORKSPACE/openwrt/feeds" -type d -name "applications")"
 echo "${tions}"
 
 if [[ `find "${tions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
