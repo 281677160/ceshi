@@ -66,6 +66,9 @@ if [[ -f "${BUILD_PATH}/${CONFIG_FILE}" ]]; then
 fi
 
 if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
+  echo "CONFIG_PACKAGE_luci=y" >> .config
+  make menuconfig
+
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 fi
