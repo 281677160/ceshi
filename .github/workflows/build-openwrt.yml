@@ -154,6 +154,8 @@ jobs:
         echo "RELEVANCE_PATH=$GITHUB_WORKSPACE/openwrt/build/relevance" >> $GITHUB_ENV
         echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
         source $GITHUB_WORKSPACE/openwrt/build/relevance/common.sh && Package_settings
+        cd $GITHUB_WORKSPACE/openwrt
+        ./scripts/feeds update -a > /dev/null 2>&1
 
     - name: 读取扩展文件
       run: |
