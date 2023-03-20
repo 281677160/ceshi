@@ -199,10 +199,10 @@ jobs:
         echo "FILE_NAME=${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}" >> $GITHUB_ENV
         echo "FIRMWARE=*" >> $GITHUB_ENV
         cd "${FIRMWARE_PATH}"
+        source ${RELEVANCE_PATH}/common.sh && Diy_armvirt
         mkdir -p ipk
         cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
         sudo tar -czf ipk.tar.gz ipk && sync
-        source ${RELEVANCE_PATH}/common.sh && Diy_armvirt
         sudo rm -rf ipk profiles.json packages
 
     - name: 上传固件至Artifacts
