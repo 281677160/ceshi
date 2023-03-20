@@ -29,13 +29,11 @@ if [[ "${DIY_PART_SH}" == "1907-luci.sh" ]]; then
   sudo chmod +x ${HOME_PATH}/zh_Hans.sh
   /bin/bash ${HOME_PATH}/zh_Hans.sh
 fi
-echo "
-amlogic_model=${amlogic_model}
-amlogic_kernel=${amlogic_kernel}
-auto_kernel=${auto_kernel}
-rootfs_size=${rootfs_size}
-kernel_repo=${kernel_repo}
- " >> ${GITHUB_ENV}
+echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
+echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
+echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
+echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
+echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
 }
 
 
