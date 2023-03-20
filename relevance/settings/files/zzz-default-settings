@@ -1,9 +1,9 @@
 #!/bin/sh
 
+touch /etc/crontabs/root
+
 uci set luci.main.lang=zh_cn
 uci commit luci
-
-touch /etc/crontabs/root
 
 uci set system.@system[0].timezone=CST-8
 uci set system.@system[0].zonename=Asia/Shanghai
