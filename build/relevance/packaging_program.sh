@@ -91,7 +91,7 @@ SOURCE_NAME2="SOURCE: ${SOURCE}"
 FOLDER_NE1="$(grep 'FOLDER_NAME:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
 FOLDER_NE2="FOLDER_NAME: ${FOLDER_NAME}"
 
-if [[ -n "${PATHS1}" ]] && [[ -n "${SOURCE_NAME1}" ]] && [[ -n "${FOLDER_NAME1}" ]]; then
+if [[ -n "${PATHS1}" ]] && [[ -n "${SOURCE_NAME1}" ]] && [[ -n "${FOLDER_NE1}" ]]; then
   sed -i "s?${PATHS1}?${PATHS2}?g" "${YML_PATH}"
   sed -i "s?${SOURCE_NAME1}?${SOURCE_NAME2}?g" "${YML_PATH}"
   sed -i "s?${FOLDER_NE1}?${FOLDER_NE2}?g" "${YML_PATH}"
