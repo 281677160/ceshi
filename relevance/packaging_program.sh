@@ -107,6 +107,6 @@ EOF
 chmod -R +x ${FOLDER_NAME}
 cd ${FOLDER_NAME}
 git add .
-git commit -m "Trigger packaging ${SOURCE} program"
+git commit -m "打包${SOURCE}-${amlogic_model}固件"
 git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
