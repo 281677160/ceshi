@@ -108,8 +108,11 @@ if [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1
     echo "UPLOAD_RELEASE=true" >> $GITHUB_ENV
     echo "FILE_TAG=targz" >> $GITHUB_ENV
     echo "FILE_NAME=armvirt-64-default-rootfs.tar.gz" >> $GITHUB_ENV
-    mv -f *.tar.gz ipk/${SOURCE}-armvirt-64-default-rootfs.tar.gz
-    mv -f ipk/${SOURCE}-armvirt-64-default-rootfs.tar.gz ${SOURCE}-armvirt-64-default-rootfs.tar.gz
+    if [[ `ls -1 | grep -c "immortalwrt"` -ge '1' ]]; then
+      rename -v "s/^immortalwrt/${SOURCE}/" *
+    else
+      rename -v "s/^openwrt/${SOURCE}/" *
+    fi
   else
     echo "PACKAGING_FIRMWARE=false" >> $GITHUB_ENV
     echo "没发现rootfs.tar.gz包存在,关闭触发Armvirt_64自动打包成img固件"
