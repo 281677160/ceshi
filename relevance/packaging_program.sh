@@ -24,7 +24,7 @@ if [[ -d "$GITHUB_WORKSPACE/patches" ]]; then
 fi
 sudo chmod +x $GITHUB_WORKSPACE/${DIY_PART_SH}
 source $GITHUB_WORKSPACE/${DIY_PART_SH}
-if [[ "${env.DIY_PART_SH}" == "1907-luci.sh" ]]; then
+if [[ "${DIY_PART_SH}" == "1907-luci.sh" ]]; then
   cp -Rf $GITHUB_WORKSPACE/relevance/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
   sudo chmod +x ${HOME_PATH}/zh_Hans.sh
   /bin/bash ${HOME_PATH}/zh_Hans.sh
