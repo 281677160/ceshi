@@ -77,11 +77,11 @@ elif [[ "${Default_Language}" == "1" ]] && [[ "${DEFAULT_CHINESE_LANGUAGE}" == "
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
   echo "默认中文LUCI设置完成"
 fi
+make defconfig > /dev/null 2>&1
 }
 
 
 function Diy_config() {
-make defconfig > /dev/null 2>&1
 export TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 export TARGET_SUBTARGET="$(awk -F '[="]+' '/TARGET_SUBTARGET/{print $2}' ${HOME_PATH}/.config)"
 export TARGET_PROFILE_DG="$(awk -F '[="]+' '/TARGET_PROFILE/{print $2}' ${HOME_PATH}/.config)"
