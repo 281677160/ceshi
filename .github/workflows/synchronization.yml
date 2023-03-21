@@ -78,6 +78,9 @@ jobs:
       if: env.REPO_TOKEN
       run: |
         cd $GITHUB_WORKSPACE
+        if [[ ! -d "repogx" ]]; then
+          git clone -b main https://github.com/${GIT_REPOSITORY}.git repogx
+        fi
         if [[ -z "${{ inputs.Deletefile_name }}" ]]; then
           echo "文件夹名称为空，无法删除文件夹"
           exit 1
@@ -85,9 +88,6 @@ jobs:
           echo "${{ inputs.inputs.establish_name }}不存在，无需删除"
           exit 1
         else
-          if [[ ! -d "repogx" ]]; then
-            git clone -b main https://github.com/${GIT_REPOSITORY}.git repogx
-          fi
           aa="${{ inputs.Deletefile_name }}"
           bb=(${aa//,/ })
           for cc in ${bb[@]}; do
