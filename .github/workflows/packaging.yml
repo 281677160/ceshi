@@ -77,6 +77,8 @@ jobs:
           echo "auto_kernel=${{ inputs.auto_kernel }}" >> ${GITHUB_ENV}
           echo "kernel_repo=${{ inputs.kernel_repo }}" >> ${GITHUB_ENV}
           echo "rootfs_size=${{ inputs.rootfs_size }}" >> ${GITHUB_ENV}
+          echo "UPLOAD_FIRMWARE=${{ github.event.inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
+          echo "UPLOAD_RELEASE=${{ github.event.inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
         else
           source ${{ env.FOLDER_NAME }}/relevance/start.ini
           echo "SOURCE=${SOURCE}" >> ${GITHUB_ENV}
@@ -85,6 +87,8 @@ jobs:
           echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
           echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
           echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
+          echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> ${GITHUB_ENV}
+          echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> ${GITHUB_ENV}
         fi
       
     - name: 部署编译环境
