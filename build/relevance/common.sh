@@ -24,7 +24,7 @@ source ${BUILD_PATH}/${DIY_PART_SH}
 GENERATE_PATH="${HOME_PATH}/package/base-files/files/bin/config_generate"
 IPADDR="$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")"
 if [[ -n "${IPV4_IPADDR}" ]]; then
-  if [[ -n "$(echo ${IPV4_IPADDR} |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" ]]; then
+  if [[ echo "${IPV4_IPADDR}" |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+") ]]; then
     sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
     echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
   else
