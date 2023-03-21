@@ -228,7 +228,7 @@ jobs:
         artifacts: "${{ env.FIRMWARE_PATH }}/${{ env.FIRMWARE }}"
         
     - name: 触发Armvirt_64自动打包成img固件
-      if: steps.release.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN && env.PACKAGING_FIRMWARE == 'true'
+      if: steps.release.outcome == 'success' && env.REPO_TOKEN && env.PACKAGING_FIRMWARE == 'true'
       run: |
         source ${RELEVANCE_PATH}/common.sh && Packaged_services
 
