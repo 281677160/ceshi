@@ -172,6 +172,8 @@ rootfs_size="${rootfs_size}"
 kernel_repo="${kernel_repo}"
 SOURCE="${SOURCE}"
 LUCI_VERSION="${LUCI_VERSION}"
+UPLOAD_FIRMWARE="${UPLOAD_FIRMWARE}"
+UPLOAD_RELEASE="${UPLOAD_RELEASE}"
 EOF
 
 chmod -R +x ${REPOS_ITORY}
