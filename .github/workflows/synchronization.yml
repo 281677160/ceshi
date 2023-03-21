@@ -69,7 +69,7 @@ jobs:
           FOLDER_NE2="FOLDER_NAME: ${{ inputs.establish_name }}"
           sed -i "s?${FOLDER_NE1}?${FOLDER_NE2}?g" "${X}"
           yml_name1="$(grep 'name:' "${X}" |sed 's/^[ ]*//g' |grep -v '^#\|^-' |awk 'NR==1')"
-          yml_name1="name: ${{ inputs.establish_name }}"
+          yml_name2="name: ${{ inputs.establish_name }}"
           sed -i "s?${yml_name1}?${yml_name2}?g" "${X}"
           echo "${{ inputs.establish_name }}文件夹创建完成"
         fi
