@@ -49,7 +49,7 @@ fi
 
 echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
 
-apptions="$(find "${HOME_PATH}/feeds" -type d -name "luci/applications")"
+apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications"  |grep 'luci')"
 if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
   cp -Rf ${RELEVANCE_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
   sudo chmod +x ${HOME_PATH}/zh_Hans.sh
