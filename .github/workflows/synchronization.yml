@@ -9,10 +9,20 @@ name: 同步上游仓库
 on:
   workflow_dispatch:
     inputs:
+      Establish:
+        description: '==创建文件夹=='
+        required: false
+        default: 'false'
+        type: boolean
       establish_name:
         description: '输入您需要创建的文件夹名称'
         required: false
         default: ''
+      Deletefile:
+        description: '==删除文件夹=='
+        required: false
+        default: 'false'
+        type: boolean
       Deletefile_name:
         description: '请输入要删除的文件夹名称,一次删除多个请用英文逗号分开'
         required: false
@@ -50,7 +60,7 @@ jobs:
         sudo timedatectl set-timezone "Asia/Shanghai"
           
     - name: 创建文件夹
-      if: env.REPO_TOKEN
+      if: env.REPO_TOKEN && github.event.inputs.Establish == 'true'
       run: |
         cd $GITHUB_WORKSPACE
         git clone -b main https://github.com/281677160/ceshi shangyou
@@ -75,7 +85,7 @@ jobs:
         fi
   
     - name: 删除文件夹
-      if: env.REPO_TOKEN
+      if: env.REPO_TOKEN && github.event.inputs.Deletefile == 'true'
       run: |
         cd $GITHUB_WORKSPACE
         if [[ ! -d "repogx" ]]; then
@@ -92,7 +102,7 @@ jobs:
           bb=(${aa//,/ })
           for cc in ${bb[@]}; do
             rm -rf repogx/"$cc"
-            rm -rf $(grep -rl "FOLDER_NAME: $cc" "repogx/.github/workflows" |sed 's/^[ ]*//g' |grep -v '^#\|compile')
+            rm -rf $(grep -rl "FOLDER_NAME: $cc" "repogx/.github/workflows" |sed 's/^[ ]*//g' |grep -v '^#\|packaging.yml')
             echo -e "\033[31m 已删除[${cc}]文件夹 \033[0m"
           done
         fi
