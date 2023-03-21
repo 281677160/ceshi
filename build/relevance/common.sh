@@ -1,5 +1,18 @@
 #!/bin/bash
 
+function Package_python3() {
+sudo apt-get update
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get install python3.5-dev
+sudo apt-get --reinstall install python3.5-minimal
+sudo mv /usr/bin/python3 /usr/bin/python3-old
+sudo ln -s /usr/bin/python3.5 /usr/bin/python3
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 300
+python3 -V
+}
+
 function Package_settings() {
 ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
 if [[ -d "${ZZZL_PATH}" ]]; then
