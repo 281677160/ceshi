@@ -50,7 +50,7 @@ jobs:
         sudo timedatectl set-timezone "Asia/Shanghai"
           
     - name: 创建文件夹
-      if: env.REPO_TOKEN &&
+      if: env.REPO_TOKEN
       run: |
         cd $GITHUB_WORKSPACE
         git clone -b main https://github.com/281677160/ceshi shangyou
