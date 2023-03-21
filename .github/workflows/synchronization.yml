@@ -28,10 +28,6 @@ on:
         required: false
         default: ''
 
-env:
-  REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
-  TZ: Asia/Shanghai
-
 jobs:
   del_runs:
     runs-on: Ubuntu-22.04
@@ -82,6 +78,14 @@ jobs:
           yml_name2="name: ${{ inputs.establish_name }}"
           sed -i "s?${yml_name1}?${yml_name2}?g" "${X}"
           echo "${{ inputs.establish_name }}文件夹创建完成"
+        fi
+        if [[ -z "${{ inputs.Deletefile_name }}" ]] && [[ "${{ inputs.Deletefile }}" == 'true' ]]; then
+          cd $GITHUB_WORKSPACE
+          chmod -R 775 repogx
+          cd repogx
+          git add .
+          git commit -m "up"
+          git push --quiet "https://${{ secrets.REPO_TOKEN }}@github.com/${{github.repository}}" HEAD:main
         fi
   
     - name: 删除文件夹
