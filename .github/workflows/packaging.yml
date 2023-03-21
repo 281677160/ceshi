@@ -117,6 +117,7 @@ jobs:
         wget -q https://github.com/${{ env.GIT_REPOSITORY }}/releases/download/targz/${{ env.SOURCE }}-armvirt-64-default-rootfs.tar.gz -O openwrt/openwrt-armvirt-64-default-rootfs.tar.gz
     
     - name: 打包固件
+      id: compile
       uses: ophub/amlogic-s9xxx-openwrt@main
       with:
         openwrt_path: openwrt/*rootfs.tar.gz
@@ -127,7 +128,15 @@ jobs:
         openwrt_size: ${{ env.rootfs_size }}
         gh_token: ${{ secrets.REPO_TOKEN }}
         
+    - name: 上传固件在 github Artifacts
+      if: steps.compile.outcome == 'success' && env.UPLOAD_FIRMWARE == 'true'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.build_name }}_firmware
+        path: ${{ env.PACKAGED_OUTPUTPATH }}
+        
     - name: 发布固件到 Github Releases
+      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true'
       uses: ncipollo/release-action@main
       with:
         name: ${{ env.build_name }}
