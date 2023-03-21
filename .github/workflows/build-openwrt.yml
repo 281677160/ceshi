@@ -21,6 +21,10 @@ on:
         description: '请输入源码的分支'
         required: true
         default: ''
+      FOLDER_NAME:
+        description: '编译使用的文件夹名称'
+        required: true
+        default: 'build'
       CONFIG_FILE:
         description: '请输入[set-config]文件夹里的配置文件名称'
         required: true
@@ -29,10 +33,6 @@ on:
         description: '请选择自定义文件名称'
         required: true
         default: ''
-      FOLDER_NAME:
-        description: '编译使用的文件夹名称'
-        required: true
-        default: 'build'
       UPLOAD_FIRMWARE:
         description: '上传固件到 Artifacts'
         required: false
@@ -63,9 +63,9 @@ env:
   # 定时编译的话，设置这里的控制为准
   REPO_URL: coolsnowwolf/lede
   REPO_BRANCH: master
+  FOLDER_NAME: build
   CONFIG_FILE: x86_64
   DIY_PART_SH: 1806-luci.sh
-  FOLDER_NAME: build
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
