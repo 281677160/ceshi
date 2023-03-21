@@ -51,13 +51,14 @@ else
   echo "KEEP_LATEST=90" >> ${GITHUB_ENV}
 fi
 
-echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
-
-apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications"  |grep 'luci')"
-if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
-  cp -Rf ${RELEVANCE_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
-  /bin/bash ${HOME_PATH}/zh_Hans.sh
-  echo "转换插件源码语言格式为[zh_Hans]完成"
+if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
+  echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
+  apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications"  |grep 'luci')"
+  if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
+    cp -Rf ${RELEVANCE_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
+    /bin/bash ${HOME_PATH}/zh_Hans.sh
+    echo "转换插件源码语言格式为[zh_Hans]完成"
+  fi
 fi
 
 echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
