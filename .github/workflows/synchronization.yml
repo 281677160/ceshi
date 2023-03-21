@@ -11,22 +11,33 @@ name: 同步上游仓库
 on:
   workflow_dispatch:
     inputs:
-      again-fork:
-        description: '[fork-actions]改成[fork],再按[Run workflow]按钮启动,开启同步上游仓库'
+      establish_name:
+        description: '输入您需要创建的文件夹名称'
         required: false
-        default: 'fork'
+        default: ''
+      Deletefile_name:
+        description: '请输入要删除的文件夹名称,一次删除多个请用英文逗号分开'
+        required: false
+        default: ''
 
 env:
-  BILDYML: synchronization.yml
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   TZ: Asia/Shanghai
 
 jobs:
   del_runs:
-    runs-on: Ubuntu-20.04
+    runs-on: Ubuntu-22.04
     name: 同步上游仓库
     
     steps:
+    - name: 密匙检测（密匙为空则退出）
+      run: |
+        if [[ -z "${{ secrets.REPO_TOKEN }}" ]]; then
+          echo "您没有设置仓库密匙，请按教程设置好密匙再来"
+          echo "REPO_TOKEN密匙制作教程：https://git.io/jm.md"
+          exit 1
+        fi
+    
     - name: 准备结束
       uses: actions/checkout@v2
       
@@ -35,30 +46,64 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get -qq update > /dev/null 2>&1
-        sudo -E apt-get -qq install -y git subversion git-core wget curl grep > /dev/null 2>&1
-        sudo timedatectl set-timezone "$TZ"
+        sudo -E apt-get -qq install -y git subversion git-core wget curl grep
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
+        sudo timedatectl set-timezone "Asia/Shanghai"
           
-    - name: 整理数据
-      if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
+    - name: 创建文件夹
+      if: env.REPO_TOKEN &&
       run: |
         cd $GITHUB_WORKSPACE
+        git clone -b main https://github.com/281677160/ceshi shangyou
         git clone -b main https://github.com/${{github.repository}} repogx
+        if [[ -z "${{ inputs.establish_name }}" ]]; then
+          echo "文件夹名称为空，无法创建文件夹"
+          exit 1
+        elif [[ -d "repogx/${{ inputs.establish_name }}" ]]; then
+          echo "${{ inputs.establish_name }}已存在，无法继续创建"
+          exit 1
+        else
+          cp -Rf shangyou/build repogx/${{ inputs.establish_name }}
+          cp -Rf .github/workflows/build-openwrt.yml repogx/.github/workflows/${{ inputs.establish_name }}.yml
+          export X="repogx/.github/workflows/${{ inputs.establish_name }}.yml"
+          FOLDER_NE2="FOLDER_NAME: .*"
+          FOLDER_NE2="FOLDER_NAME: ${{ inputs.establish_name }}"
+          sed -i "s?${FOLDER_NE1}?${FOLDER_NE2}?g" "${X}"
+          yml_name1="$(grep 'name:' "${X}" |sed 's/^[ ]*//g' |grep -v '^#\|^-' |awk 'NR==1')"
+          yml_name1="name: ${{ inputs.establish_name }}"
+          sed -i "s?${yml_name1}?${yml_name2}?g" "${X}"
+          echo "${{ inputs.establish_name }}文件夹创建完成"
+        fi
         
-    - name: 同步上游仓库
-      if: env.REPO_TOKEN && (github.event.inputs.again-fork == 'fork')
+        
+    - name: 删除文件夹
+      if: env.REPO_TOKEN
       run: |
         cd $GITHUB_WORKSPACE
-        mkdir -p repogx/build
-        mv -f repogx/diy repogx/build/diy
-        mv -f repogx/files repogx/build/files
-        mv -f repogx/patches repogx/build/patches
-        mv -f repogx/relevance repogx/build/relevance
-        mv -f repogx/set-config repogx/build/set-config
-        mv -f repogx/1806-luci.sh repogx/build/1806-luci.sh
-        mv -f repogx/1907-luci.sh repogx/build/1907-luci.sh
+        if [[ -z "${{ inputs.Deletefile_name }}" ]]; then
+          echo "文件夹名称为空，无法删除文件夹"
+          exit 1
+        elif [[ ! -d "${{ inputs.establish_name }}" ]]; then
+          echo "${{ inputs.inputs.establish_name }}不存在，无需删除"
+          exit 1
+        else
+          if [[ ! -d "repogx" ]]; then
+            git clone -b main https://github.com/${GIT_REPOSITORY}.git repogx
+          fi
+          aa="${{ inputs.Deletefile_name }}"
+          bb=(${aa//,/ })
+          for cc in ${bb[@]}; do
+            rm -rf repogx/"$cc"
+            rm -rf $(grep -rl "FOLDER_NAME: $cc" "repogx/.github/workflows" |sed 's/^[ ]*//g' |grep -v '^#\|compile')
+            echo -e "\033[31m 已删除[${cc}]文件夹 \033[0m"
+          done
+        fi
         
+    - name: 运行程序
+      if: env.REPO_TOKEN
+      run: |
+        cd $GITHUB_WORKSPACE
         chmod -R 775 repogx
         cd repogx
         git add .
