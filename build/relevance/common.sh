@@ -40,11 +40,15 @@ fi
 if [[ -n "${RETAIN_DAYS}" ]]; then
   echo "RETAIN_DAYS=${RETAIN_DAYS}" >> ${GITHUB_ENV}
   echo "清除${RETAIN_DAYS}天前的Artifacts记录"
+else
+  echo "RETAIN_DAYS=30" >> ${GITHUB_ENV}
 fi
 
 if [[ -n "${KEEP_LATEST}" ]]; then
   echo "KEEP_LATEST=${KEEP_LATEST}" >> ${GITHUB_ENV}
   echo "保留${KEEP_LATEST}个Releases不被清理"
+else
+  echo "KEEP_LATEST=90" >> ${GITHUB_ENV}
 fi
 
 echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
