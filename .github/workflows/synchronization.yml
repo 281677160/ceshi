@@ -73,8 +73,7 @@ jobs:
           sed -i "s?${yml_name1}?${yml_name2}?g" "${X}"
           echo "${{ inputs.establish_name }}文件夹创建完成"
         fi
-        
-        
+  
     - name: 删除文件夹
       if: env.REPO_TOKEN
       run: |
