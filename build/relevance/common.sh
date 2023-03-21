@@ -120,6 +120,7 @@ function Diy_armvirt() {
 if [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
   if [[ `ls -1 |grep -v "ipk" |grep -c ".tar.gz"` -eq '1' ]]; then
     echo "FIRMWARE=*rootfs.tar.gz" >> $GITHUB_ENV
+    echo "DABAO_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
     echo "UPLOAD_RELEASE=true" >> $GITHUB_ENV
     echo "FILE_TAG=targz" >> $GITHUB_ENV
     echo "FILE_NAME=armvirt-64-default-rootfs.tar.gz" >> $GITHUB_ENV
@@ -173,7 +174,7 @@ kernel_repo="${kernel_repo}"
 SOURCE="${SOURCE}"
 LUCI_VERSION="${LUCI_VERSION}"
 UPLOAD_FIRMWARE="${UPLOAD_FIRMWARE}"
-UPLOAD_RELEASE="${UPLOAD_RELEASE}"
+UPLOAD_RELEASE="${DABAO_RELEASE}"
 EOF
 
 chmod -R +x ${REPOS_ITORY}
