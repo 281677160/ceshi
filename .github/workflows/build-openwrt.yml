@@ -178,6 +178,16 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        echo "Config_Date=$(date +"%Y.%m%d")" >> $GITHUB_ENV
+        mkdir -p ${HOME_PATH}/CONFIG_DATE
+        ./scripts/diffconfig.sh > ${HOME_PATH}/CONFIG_DATE/config.txt
+        
+    - name: 上传.config配置文件在Artifacts
+      if: steps.compile.outcome == 'success'
+      uses: actions/upload-artifact@main
+      with:
+        name: .config_${{ env.SOURCE }}_${{ env.TARGET_PROFILE }}_${{ env.Config_Date }}
+        path: openwrt/CONFIG_DATE/config.txt
 
     - name: 开始编译固件
       id: compile
