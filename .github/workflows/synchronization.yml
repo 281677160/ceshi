@@ -74,11 +74,11 @@ jobs:
           cp -Rf shangyou/build repogx/${{ inputs.establish_name }}
           cp -Rf .github/workflows/build-openwrt.yml repogx/.github/workflows/${{ inputs.establish_name }}.yml
           export X="repogx/.github/workflows/${{ inputs.establish_name }}.yml"
-          FOLDER_NE1="FOLDER_NAME: .*"
-          FOLDER_NE2="FOLDER_NAME: ${{ inputs.establish_name }}"
+          export FOLDER_NE1="FOLDER_NAME: .*"
+          export FOLDER_NE2="FOLDER_NAME: ${{ inputs.establish_name }}"
           sed -i "s?${FOLDER_NE1}?${FOLDER_NE2}?g" "${X}"
-          yml_name1="$(grep 'name:' "${X}" |sed 's/^[ ]*//g' |grep -v '^#\|^-' |awk 'NR==1')"
-          yml_name2="name: ${{ inputs.establish_name }}"
+          export yml_name1="$(grep 'name:' "${X}" |sed 's/^[ ]*//g' |grep -v '^#\|^-' |awk 'NR==1')"
+          export yml_name2="name: ${{ inputs.establish_name }}"
           sed -i "s?${yml_name1}?${yml_name2}?g" "${X}"
           echo "${{ inputs.establish_name }}文件夹创建完成"
         fi
@@ -101,16 +101,17 @@ jobs:
         if [[ -z "${{ inputs.Deletefile_name }}" ]]; then
           echo "文件夹名称为空，无法删除文件夹"
           exit 1
-        elif [[ ! -d "${{ inputs.establish_name }}" ]]; then
-          echo "${{ inputs.inputs.establish_name }}不存在，无需删除"
-          exit 1
         else
-          aa="${{ inputs.Deletefile_name }}"
-          bb=(${aa//,/ })
+          export aa="${{ github.event.inputs.Deletefile_name }}"
+          export bb=(${aa//,/ })
           for cc in ${bb[@]}; do
-            rm -rf repogx/"$cc"
-            rm -rf $(grep -rl "FOLDER_NAME: $cc" "repogx/.github/workflows" |sed 's/^[ ]*//g' |grep -v '^#\|packaging.yml')
-            echo -e "\033[31m 已删除[${cc}]文件夹 \033[0m"
+            if [[ -d "repogx/${cc}" ]]; then
+              rm -rf repogx/"$cc"
+              rm -rf $(grep -rl "FOLDER_NAME: $cc" "repogx/.github/workflows" |sed 's/^[ ]*//g' |grep -v '^#\|packaging.yml')
+              echo -e "\033[31m 已删除[${cc}]文件夹 \033[0m"
+            else
+              echo -e "\033[31m [${cc}]文件夹不存在 \033[0m"
+            fi
           done
         fi
         
