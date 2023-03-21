@@ -59,6 +59,7 @@ if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
     /bin/bash ${HOME_PATH}/zh_Hans.sh
     echo "转换插件源码语言格式为[zh_Hans]完成"
   fi
+  echo "默认中文LUCI设置完成"
 fi
 
 if [[ -n "${amlogic_model}" ]]; then
@@ -89,7 +90,6 @@ if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
   echo "CONFIG_PACKAGE_default-settings=y" >> ${HOME_PATH}/.config
   echo "CONFIG_PACKAGE_default-settings-chn=y" >> ${HOME_PATH}/.config
   sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
-  echo "默认中文LUCI设置完成"
 fi
 
 make defconfig > /dev/null 2>&1
