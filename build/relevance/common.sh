@@ -61,11 +61,21 @@ if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
   fi
 fi
 
-echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
-echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
-echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
-echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
-echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
+if [[ -n "${amlogic_model}" ]]; then
+  echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
+fi
+if [[ -n "${amlogic_kernel}" ]]; then
+  echo "amlogic_kernel=${amlogic_kernel}" >> ${GITHUB_ENV}
+fi
+if [[ -n "${auto_kernel}" ]]; then
+  echo "auto_kernel=${auto_kernel}" >> ${GITHUB_ENV}
+fi
+if [[ -n "${rootfs_size}" ]]; then
+  echo "rootfs_size=${rootfs_size}" >> ${GITHUB_ENV}
+fi
+if [[ -n "${kernel_repo}" ]]; then
+  echo "kernel_repo=${kernel_repo}" >> ${GITHUB_ENV}
+fi
 }
 
 
