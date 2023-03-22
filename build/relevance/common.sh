@@ -10,6 +10,14 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 300
 }
 
 function Package_settings() {
+cp -Rf $GITHUB_WORKSPACE/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
+sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
+echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
+echo "RELEVANCE_PATH=$GITHUB_WORKSPACE/openwrt/build/relevance" >> $GITHUB_ENV
+echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
+cd $GITHUB_WORKSPACE/openwrt
+./scripts/feeds update -a > /dev/null 2>&1
+
 ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
 if [[ -d "${ZZZL_PATH}" ]]; then
   echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
