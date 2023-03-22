@@ -28,6 +28,9 @@ wifi up
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo 'log-facility=/dev/null' >> /etc/dnsmasq.conf
 
+sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
+echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
+
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
 
