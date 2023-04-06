@@ -10,7 +10,7 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 300
 }
 
 function Package_settings() {
-cp -Rf $GITHUB_WORKSPACE/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
+cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
 sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
 echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
 echo "RELEVANCE_PATH=$GITHUB_WORKSPACE/openwrt/build/relevance" >> $GITHUB_ENV
