@@ -135,6 +135,7 @@ jobs:
         df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /${{ env.DIY_WORK }}/openwrt $GITHUB_WORKSPACE/openwrt
+        sudo chmod -R +x $GITHUB_WORKSPACE/build
         source $GITHUB_WORKSPACE/build/${{ env.FOLDER_NAME }}/relevance/common.sh && Package_settings
 
     - name: 读取扩展文件
