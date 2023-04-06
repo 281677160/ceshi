@@ -4,10 +4,10 @@ function Package_settings() {
 cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
 cp -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/*.sh $GITHUB_WORKSPACE/openwrt/build/
 sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
-echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
 export HOME_PATH="$GITHUB_WORKSPACE/openwrt"
 echo "HOME_PATH=${HOME_PATH}" >> $GITHUB_ENV
-cd $GITHUB_WORKSPACE/openwrt
+echo "BUILD_PATH=${HOME_PATH}/build" >> $GITHUB_ENV
+cd ${HOME_PATH}
 ./scripts/feeds update -a > /dev/null 2>&1
 if [[ -d "${HOME_PATH}/extra" ]]; then
   apptions="$(find "${HOME_PATH}/extra" -type d -name "applications"  |grep 'luci')"
