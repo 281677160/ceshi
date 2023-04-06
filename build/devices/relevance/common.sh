@@ -36,7 +36,7 @@ elif [[ ! -d "${settingss}" ]] && [[ "${applica}" == "2" ]]; then
 fi
 
 export ZZZL_PATH="$(find ./package -type f -name "*default-settings" |grep files |cut -d '/' -f2-)"
-echo "ZZZL_PATH=${HOME_PATH}/${ZZZL_PATH}" >> $GITHUB_ENV
+echo "ZZZ_PATH=${HOME_PATH}/${ZZZL_PATH}" >> $GITHUB_ENV
 }
 
 
@@ -61,8 +61,8 @@ if [[ -n "${IPV4_IPADDR}" ]]; then
   fi
 fi
 
-if [[ "${DELETE_LOGIN_PASSWORD}" == "1" ]]; then
-  [[ -f "${ZZZ_PATH}" ]] && sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
+if [[ "${DELETE_LOGIN_PASSWORD}" == "1" ]] && [[ -f "${ZZZ_PATH}" ]]; then
+  sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
   echo "清除登录密码完成"
 fi
 
@@ -114,7 +114,7 @@ if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
   echo "CONFIG_PACKAGE_luci=y" >> ${HOME_PATH}/.config
   echo "CONFIG_PACKAGE_default-settings=y" >> ${HOME_PATH}/.config
   echo "CONFIG_PACKAGE_default-settings-chn=y" >> ${HOME_PATH}/.config
-  sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
+  [[ -f "${ZZZ_PATH}" ]] && sed -i "s?main.lang=.*?main.lang='zh_cn'?g" "${ZZZ_PATH}"
 fi
 
 make defconfig
