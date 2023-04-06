@@ -212,6 +212,7 @@ git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
 
 function Diy_xinxi() {
+echo "1"
 cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
 KERNEL_PATCH="$(grep "KERNEL_PATCHVER" "${HOME_PATH}/target/linux/${TARGET_BOARD}/Makefile" |grep -Eo "[0-9.]+")"
 KERNEL_CONFIG="kernel-${KERNEL_PATCH}"
@@ -223,7 +224,7 @@ else
   [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
 fi
 clear
-echo
+echo "2"
 echo
 echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
 echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
@@ -232,7 +233,7 @@ echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
 echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
 echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
 echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
-echo
+echo "3"
 echo -e "\033[34m 服务器CPU: ${cpu_model} \033[0m"
 echo
 if [[ "${UPLOAD_FIRMWARE}" == "true" ]]; then
