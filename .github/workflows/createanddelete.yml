@@ -67,11 +67,11 @@ jobs:
         if [[ -z "${{ inputs.establish_name }}" ]]; then
           echo "文件夹名称为空，无法创建文件夹"
           exit 1
-        elif [[ -d "repogx/${{ inputs.establish_name }}" ]]; then
+        elif [[ -d "repogx/build/${{ inputs.establish_name }}" ]]; then
           echo "${{ inputs.establish_name }}已存在，无法继续创建"
           exit 1
         else
-          cp -Rf shangyou/build repogx/${{ inputs.establish_name }}
+          cp -Rf shangyou/build/devices repogx/build/${{ inputs.establish_name }}
           cp -Rf .github/workflows/build-openwrt.yml repogx/.github/workflows/${{ inputs.establish_name }}.yml
           export X="repogx/.github/workflows/${{ inputs.establish_name }}.yml"
           export FOLDER_NE1="FOLDER_NAME: .*"
@@ -105,8 +105,8 @@ jobs:
           export aa="${{ github.event.inputs.Deletefile_name }}"
           export bb=(${aa//,/ })
           for cc in ${bb[@]}; do
-            if [[ -d "repogx/${cc}" ]]; then
-              rm -rf repogx/"$cc"
+            if [[ -d "repogx/build/${cc}" ]]; then
+              rm -rf repogx/build/"$cc"
               rm -rf $(grep -rl "FOLDER_NAME: $cc" "repogx/.github/workflows" |sed 's/^[ ]*//g' |grep -v '^#\|packaging.yml')
               echo -e "\033[31m 已删除[${cc}]文件夹 \033[0m"
             else
