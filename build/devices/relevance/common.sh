@@ -210,3 +210,45 @@ git add .
 git commit -m "打包${SOURCE}-${amlogic_model}固件"
 git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
+
+function Diy_xinxi() {
+cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
+KERNEL_PATCH="$(grep "KERNEL_PATCHVER" "${HOME_PATH}/target/linux/${TARGET_BOARD}/Makefile" |grep -Eo "[0-9.]+")"
+KERNEL_CONFIG="kernel-${KERNEL_PATCH}"
+if [[ -f "${HOME_PATH}/include/${KERNEL_CONFIG}" ]]; then
+  LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/${KERNEL_CONFIG}" |sed s/[[:space:]]//g |cut -d '-' -f2 |cut -d '=' -f1)"
+  [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
+else
+  LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/kernel-version.mk" |grep -Eo "${KERNEL_PATCH}\.[0-9]+")"
+  [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
+fi
+echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
+echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
+echo -e "\033[32m 内核版本: ${LINUX_KERNEL} \033[0m"
+echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
+echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
+echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
+echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
+echo
+echo
+if [[ ${UPLOAD_FIRMWARE} == "true" ]]; then
+  echo -e "\033[33m 上传固件在github actions: 开启 \033[0m"
+else
+  echo -e "\033[33m 上传固件在github actions: 关闭 \033[0m"
+fi
+if [[ ${UPLOAD_RELEAS} == "true" ]]; then
+  echo -e "\033[33m 发布固件(Releases): 开启 \033[0m"
+else
+  echo -e "\033[33m 发布固件(Releases): 关闭 \033[0m"
+fi
+if [[ ${CACHEWRTBUILD_SWITCH} == "true" ]]; then
+  echo -e "\033[33m 是否开启缓存加速: 开启 \033[0m"
+else
+  echo -e "\033[33m 是否开启缓存加速: 关闭 \033[0m"
+fi
+if [[ ${PACKAGING_FIRMWARE} == "true" ]]; then
+  echo -e "\033[33m Armvirt_64自动打包成img固件: 开启 \033[0m"
+else
+  echo -e "\033[33m Armvirt_64自动打包成img固件: 关闭 \033[0m"
+fi
+}
