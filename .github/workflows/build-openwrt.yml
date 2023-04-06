@@ -140,7 +140,7 @@ jobs:
     - name: 读取扩展文件
       run: |
         cd openwrt
-        source ${RELEVANCE_PATH}/common.sh && Diy_partsh
+        source ${BUILD_PATH}/common.sh && Diy_partsh
 
     - name: 安装源码插件源
       run: |
@@ -148,7 +148,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a > /dev/null 2>&1
         ./scripts/feeds install -a
-        source ${RELEVANCE_PATH}/common.sh && Diy_config
+        source ${BUILD_PATH}/common.sh && Diy_config
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
@@ -179,7 +179,7 @@ jobs:
         echo "FILE_NAME=${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}" >> $GITHUB_ENV
         echo "FIRMWARE=*" >> $GITHUB_ENV
         cd "${FIRMWARE_PATH}"
-        source ${RELEVANCE_PATH}/common.sh && Diy_armvirt
+        source ${BUILD_PATH}/common.sh && Diy_armvirt
         mkdir -p ipk
         cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
         sudo tar -czf ipk.tar.gz ipk && sync
@@ -208,7 +208,7 @@ jobs:
     - name: 触发Armvirt_64自动打包成img固件
       if: steps.release.outcome == 'success' && env.REPO_TOKEN && env.PACKAGING_FIRMWARE == 'true'
       run: |
-        source ${RELEVANCE_PATH}/common.sh && Packaged_services
+        source ${BUILD_PATH}/common.sh && Packaged_services
 
     - name: 清理Artifacts
       continue-on-error: true
