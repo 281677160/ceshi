@@ -151,7 +151,7 @@ jobs:
         ./scripts/feeds install -a
         source ${BUILD_PATH}/common.sh && Diy_config
         
-    - name: 编译
+    - name: 编译信息
       run: |
         cd openwrt
         source ${BUILD_PATH}/common.sh && Diy_xinxi
