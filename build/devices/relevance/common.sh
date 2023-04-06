@@ -233,23 +233,24 @@ echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
 echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
 echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
 echo
+echo -e "\033[34m 服务器CPU: ${cpu_model} \033[0m"
 echo
-if [[ ${UPLOAD_FIRMWARE} == "true" ]]; then
+if [[ "${UPLOAD_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m 上传固件在github actions: 开启 \033[0m"
 else
   echo -e "\033[33m 上传固件在github actions: 关闭 \033[0m"
 fi
-if [[ ${UPLOAD_RELEAS} == "true" ]]; then
+if [[ "${UPLOAD_RELEAS}" == "true" ]]; then
   echo -e "\033[33m 发布固件(Releases): 开启 \033[0m"
 else
   echo -e "\033[33m 发布固件(Releases): 关闭 \033[0m"
 fi
-if [[ ${CACHEWRTBUILD_SWITCH} == "true" ]]; then
+if [[ "${CACHEWRTBUILD_SWITCH}" == "true" ]]; then
   echo -e "\033[33m 是否开启缓存加速: 开启 \033[0m"
 else
   echo -e "\033[33m 是否开启缓存加速: 关闭 \033[0m"
 fi
-if [[ ${PACKAGING_FIRMWARE} == "true" ]]; then
+if [[ "${PACKAGING_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m Armvirt_64自动打包成img固件: 开启 \033[0m"
 else
   echo -e "\033[33m Armvirt_64自动打包成img固件: 关闭 \033[0m"
