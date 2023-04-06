@@ -153,7 +153,8 @@ jobs:
         
     - name: 编译信息
       continue-on-error: true
-      run: source ${BUILD_PATH}/common.sh && Diy_xinxi
+      run: |
+        source ${BUILD_PATH}/common.sh && Diy_xinxi
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
