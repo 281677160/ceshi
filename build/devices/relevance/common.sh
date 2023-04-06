@@ -2,9 +2,9 @@
 
 function Package_settings() {
 cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
+cd -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/*.sh $GITHUB_WORKSPACE/openwrt/build/
 sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
 echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
-echo "RELEVANCE_PATH=$GITHUB_WORKSPACE/openwrt/build/relevance" >> $GITHUB_ENV
 export HOME_PATH="$GITHUB_WORKSPACE/openwrt"
 echo "HOME_PATH=${HOME_PATH}" >> $GITHUB_ENV
 cd $GITHUB_WORKSPACE/openwrt
@@ -74,16 +74,12 @@ else
   echo "KEEP_LATEST=90" >> ${GITHUB_ENV}
 fi
 
-if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
-  echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
-  apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications"  |grep 'luci')"
-  if [[ -d "${apptions}" ]] && [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -ge '15' ]]; then
-    cp -Rf ${RELEVANCE_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
-    /bin/bash ${HOME_PATH}/zh_Hans.sh
-    echo "转换插件源码语言格式为[zh_Hans]完成"
-  fi
-  echo "默认中文LUCI设置完成"
+if [[ "${DIY_PART_SH}" == "diy-luci2.sh" ]]; then
+  cp -Rf ${BUILD_PATH}/zh_Hans.sh ${HOME_PATH}/zh_Hans.sh
+  /bin/bash ${HOME_PATH}/zh_Hans.sh
 fi
+
+echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
 
 if [[ -n "${amlogic_model}" ]]; then
   echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
