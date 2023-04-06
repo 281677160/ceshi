@@ -59,7 +59,7 @@ env:
   # 定时编译的话，设置这里的控制为准
   REPO_URL: coolsnowwolf/lede
   REPO_BRANCH: master
-  FOLDER_NAME: build
+  FOLDER_NAME: devices
   CONFIG_FILE: x86_64
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
