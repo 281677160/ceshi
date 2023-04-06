@@ -1,14 +1,5 @@
 #!/bin/bash
 
-function Package_python3() {
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt-get update
-sudo apt-get install python3.5
-whereis python3.5
-python3 -V
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 300
-}
-
 function Package_settings() {
 cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
 sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
