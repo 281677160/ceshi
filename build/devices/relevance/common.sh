@@ -4,7 +4,7 @@ function Package_settings() {
 export HOME_PATH="$GITHUB_WORKSPACE/openwrt"
 cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} ${HOME_PATH}/build
 cp -Rf ${HOME_PATH}/build/relevance/*.sh ${HOME_PATH}/build/
-sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
+sudo chmod -R +x ${HOME_PATH}/build
 echo "HOME_PATH=${HOME_PATH}" >> $GITHUB_ENV
 echo "BUILD_PATH=${HOME_PATH}/build" >> $GITHUB_ENV
 cd ${HOME_PATH}
