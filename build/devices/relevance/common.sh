@@ -222,6 +222,9 @@ else
   LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/kernel-version.mk" |grep -Eo "${KERNEL_PATCH}\.[0-9]+")"
   [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
 fi
+clear
+echo
+echo
 echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
 echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
 echo -e "\033[32m 内核版本: ${LINUX_KERNEL} \033[0m"
@@ -251,4 +254,6 @@ if [[ ${PACKAGING_FIRMWARE} == "true" ]]; then
 else
   echo -e "\033[33m Armvirt_64自动打包成img固件: 关闭 \033[0m"
 fi
+echo
+echo
 }
