@@ -1,0 +1,237 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
+
+name: Lede_x86_64
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      REPO_URL:
+        description: '请输入您要编译的源码仓库'
+        required: true
+        default: ''
+      REPO_BRANCH:
+        description: '请输入源码的分支'
+        required: true
+        default: ''
+      FOLDER_NAME:
+        description: '编译使用的文件夹名称'
+        required: true
+        default: ''
+      CONFIG_FILE:
+        description: '请输入[set-config]文件夹里的配置文件名称'
+        required: true
+        default: ''
+      DIY_PART_SH:
+        description: '请选择自定义文件名称'
+        required: true
+        default: ''
+      UPLOAD_FIRMWARE:
+        description: '上传固件到 Artifacts'
+        required: false
+        default: 'true'
+        type: boolean
+      UPLOAD_RELEASE:
+        description: '发布固件到 Releases'
+        required: false
+        default: 'false'
+        type: boolean
+      CACHEWRTBUILD_SWITCH:
+        description: '缓存加速编译'
+        required: false
+        default: 'true'
+        type: boolean
+      PACKAGING_FIRMWARE:
+        description: 'Armvirt_64自动打包成img固件'
+        required: false
+        default: 'true'
+        type: boolean
+
+
+# 定时触发开启开始编译(把下面两个#去掉开启)
+#  schedule:
+#   - cron: 35 4 * * *
+
+env:
+  # 定时编译的话，设置这里的控制为准
+  REPO_URL: coolsnowwolf/lede
+  REPO_BRANCH: master
+  FOLDER_NAME: Lede_x86_64
+  CONFIG_FILE: x86_64
+  DIY_PART_SH: 1806-luci.sh
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: false
+  CACHEWRTBUILD_SWITCH: true
+  PACKAGING_FIRMWARE: true
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: 编译固件
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: 读取变量
+      run: |
+        echo "GIT_REPOSITORY=${{github.repository}}" >> $GITHUB_ENV
+        echo "REPO_TOKEN=${{ secrets.REPO_TOKEN }}" >> $GITHUB_ENV
+        if [[ -n "${{ inputs.REPO_URL }}" ]]; then
+          echo "FOLDER_NAME=${{ inputs.FOLDER_NAME }}" >> ${GITHUB_ENV}
+          echo "REPO_URL=https://github.com/${{ inputs.REPO_URL }}" >> ${GITHUB_ENV}
+          echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
+          echo "CONFIG_FILE=set-config/${{ inputs.CONFIG_FILE }}" >> ${GITHUB_ENV}
+          echo "DIY_PART_SH=${{ inputs.DIY_PART_SH }}" >> ${GITHUB_ENV}
+          echo "UPLOAD_FIRMWARE=${{ inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
+          echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
+          echo "CACHEWRTBUILD_SWITCH=${{ inputs.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
+          echo "PACKAGING_FIRMWARE=${{ inputs.PACKAGING_FIRMWARE }}" >> ${GITHUB_ENV}
+          export SOURCE="$(echo "${{ inputs.REPO_URL }}" |cut -d"/" -f1)"
+          export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
+          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
+          echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
+          echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
+          echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
+        else
+          echo "FOLDER_NAME=${{ env.FOLDER_NAME }}" >> ${GITHUB_ENV}
+          echo "REPO_URL=https://github.com/${{ env.REPO_URL }}" >> ${GITHUB_ENV}
+          echo "REPO_BRANCH=${{ env.REPO_BRANCH }}" >> ${GITHUB_ENV}
+          echo "CONFIG_FILE=set-config/${{ env.CONFIG_FILE }}" >> ${GITHUB_ENV}
+          echo "DIY_PART_SH=${{ env.DIY_PART_SH }}" >> ${GITHUB_ENV}
+          echo "UPLOAD_FIRMWARE=${{ env.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
+          echo "UPLOAD_RELEASE=${{ env.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
+          echo "CACHEWRTBUILD_SWITCH=${{ env.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
+          echo "PACKAGING_FIRMWARE=${{ env.PACKAGING_FIRMWARE }}" >> ${GITHUB_ENV}
+          export SOURCE="$(echo "${{ env.REPO_URL }}" |cut -d"/" -f1)"
+          export LUCI_VERSION="$(echo "${{ env.REPO_BRANCH }}" |cut -d"-" -f2-)"
+          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
+          echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
+          echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
+          echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
+        fi
+
+    - name: 部署编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        docker rmi `docker images -q`
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /usr/lib/jvm /opt/ghc /swapfile
+        sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.eu.org/init_build_environment.sh)'
+        sudo -E apt-get -qq install -y rename pigz libfuse-dev
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "Asia/Shanghai"
+        sudo mkdir -p /${{ env.DIY_WORK }}
+        sudo chown $USER:$GROUPS /${{ env.DIY_WORK }}
+
+    - name: 拉取源码
+      working-directory: /${{ env.DIY_WORK }}
+      run: |
+        df -hT $PWD
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        ln -sf /${{ env.DIY_WORK }}/openwrt $GITHUB_WORKSPACE/openwrt
+        source $GITHUB_WORKSPACE/${{ env.FOLDER_NAME }}/relevance/common.sh && Package_settings
+
+    - name: 读取扩展文件
+      run: |
+        cd openwrt
+        source ${RELEVANCE_PATH}/common.sh && Diy_partsh
+
+    - name: 安装源码插件源
+      run: |
+        cd openwrt
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a > /dev/null 2>&1
+        ./scripts/feeds install -a
+        source ${RELEVANCE_PATH}/common.sh && Diy_config
+        
+    - name: 缓存加速
+      if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
+      uses: stupidloud/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        mixkey: "${{ env.TARGET_PROFILE }}"
+        prefix: ${{ github.workspace }}/openwrt
+
+    - name: 下载软件源
+      id: package
+      run: |
+        cd openwrt
+        make defconfig
+        make download -j8
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
+
+    - name: 开始编译固件
+      id: compile
+      run: |
+        cd openwrt
+        echo -e "$(nproc) thread compile"
+        make -j$(nproc) || make -j1 V=s
+        echo "date=$(date +'%m.%d')" >> $GITHUB_ENV
+        echo "FILE_DATE=$(date +"%Y.%m%d.%H%M")" >> $GITHUB_ENV
+        echo "FILE_TAG=$(date +"%Y%m%d%H%M%S")" >> $GITHUB_ENV
+        echo "FILE_NAME=${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}" >> $GITHUB_ENV
+        echo "FIRMWARE=*" >> $GITHUB_ENV
+        cd "${FIRMWARE_PATH}"
+        source ${RELEVANCE_PATH}/common.sh && Diy_armvirt
+        mkdir -p ipk
+        cp -rf $(find ${HOME_PATH}/bin/packages/ -type f -name "*.ipk") ipk/ && sync
+        sudo tar -czf ipk.tar.gz ipk && sync
+        sudo rm -rf ipk profiles.json packages
+
+    - name: 上传固件至Artifacts
+      if: steps.compile.outcome == 'success'&& env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      uses: actions/upload-artifact@main
+      with:
+        name: ${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}-${{ env.FILE_DATE }}-firmware
+        path: ${{ env.FIRMWARE_PATH }}
+
+    - name: 发布固件到release
+      id: release
+      if: steps.compile.outcome == 'success' && env.UPLOAD_RELEASE == 'true' && env.REPO_TOKEN
+      uses: ncipollo/release-action@main
+      with:
+        name: ${{ env.FILE_NAME }}
+        tag: ${{ env.FILE_TAG }}
+        token: ${{ secrets.REPO_TOKEN }}
+        body: ${{ env.FILE_DATE }}
+        allowUpdates: true
+        replacesArtifacts: true
+        artifacts: "${{ env.FIRMWARE_PATH }}/${{ env.FIRMWARE }}"
+        
+    - name: 触发Armvirt_64自动打包成img固件
+      if: steps.release.outcome == 'success' && env.REPO_TOKEN && env.PACKAGING_FIRMWARE == 'true'
+      run: |
+        source ${RELEVANCE_PATH}/common.sh && Packaged_services
+
+    - name: 清理Artifacts
+      continue-on-error: true
+      if: env.REPO_TOKEN
+      uses: Mattraks/delete-workflow-runs@v2
+      with:
+          token: ${{ secrets.REPO_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: ${{ env.RETAIN_DAYS }}
+          keep_minimum_runs: 0
+    
+    - name: 删除releases
+      continue-on-error: true
+      if: env.REPO_TOKEN
+      uses: danshui-git/delete-older-releases@main
+      with:
+        repo: ${{ github.repository }}
+        keep_latest: ${{ env.KEEP_LATEST }}
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
