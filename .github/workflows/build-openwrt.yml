@@ -22,7 +22,7 @@ on:
         required: true
         default: ''
       FOLDER_NAME:
-        description: '编译使用的文件夹名称'
+        description: '使用[build]文件夹里的[xx]文件'
         required: true
         default: ''
       CONFIG_FILE:
