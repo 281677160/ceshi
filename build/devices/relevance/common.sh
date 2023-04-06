@@ -2,7 +2,7 @@
 
 function Package_settings() {
 cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
-cd -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/*.sh $GITHUB_WORKSPACE/openwrt/build/
+cp -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/*.sh $GITHUB_WORKSPACE/openwrt/build/
 sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
 echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
 export HOME_PATH="$GITHUB_WORKSPACE/openwrt"
