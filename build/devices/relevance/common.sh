@@ -14,17 +14,32 @@ cp -Rf $GITHUB_WORKSPACE/build/${FOLDER_NAME} $GITHUB_WORKSPACE/openwrt/build
 sudo chmod -R +x $GITHUB_WORKSPACE/openwrt/build
 echo "BUILD_PATH=$GITHUB_WORKSPACE/openwrt/build" >> $GITHUB_ENV
 echo "RELEVANCE_PATH=$GITHUB_WORKSPACE/openwrt/build/relevance" >> $GITHUB_ENV
-echo "HOME_PATH=$GITHUB_WORKSPACE/openwrt" >> $GITHUB_ENV
+export HOME_PATH="$GITHUB_WORKSPACE/openwrt"
+echo "HOME_PATH=${HOME_PATH}" >> $GITHUB_ENV
 cd $GITHUB_WORKSPACE/openwrt
 ./scripts/feeds update -a > /dev/null 2>&1
-
-ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
-if [[ -d "${ZZZL_PATH}" ]]; then
-  echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
+if [[ -d "${HOME_PATH}/extra" ]]; then
+  apptions="$(find "${HOME_PATH}/extra" -type d -name "applications"  |grep 'luci')"
 else
-  cp -Rf $GITHUB_WORKSPACE/openwrt/build/relevance/settings $GITHUB_WORKSPACE/openwrt/package/default-settings
-  echo "ZZZ_PATH=$(find "$GITHUB_WORKSPACE/openwrt/package" -type f -name "*-default-settings")" >> $GITHUB_ENV
+  apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications"  |grep 'luci')"
 fi
+if [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -gt '15' ]]; then
+  applica="1"
+  echo "DIY_PART_SH=diy-luci2.sh" >> ${GITHUB_ENV}
+else
+  applica="2"
+  echo "DIY_PART_SH=diy-luci1.sh" >> ${GITHUB_ENV}
+fi
+
+settingss="$(find "${HOME_PATH}/package" -type d -name "default-settings")"
+if [[ ! -d "${settingss}" ]] && [[ "${applica}" == "1" ]]; then
+  svn export https://github.com/281677160/common/trunk/OFFICIAL/default-settings ${HOME_PATH}/package/default-settings > /dev/null 2>&1
+elif [[ ! -d "${settingss}" ]] && [[ "${applica}" == "2" ]]; then
+  svn export https://github.com/281677160/common/trunk/COOLSNOWWOLF/default-settings ${HOME_PATH}/package/default-settings > /dev/null 2>&1
+fi
+
+export ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
+echo "ZZZL_PATH=${ZZZL_PATH}" >> $GITHUB_ENV
 }
 
 
