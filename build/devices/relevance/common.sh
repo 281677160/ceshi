@@ -29,8 +29,8 @@ elif [[ ! -d "${settingss}" ]] && [[ "${applica}" == "2" ]]; then
   svn export https://github.com/281677160/common/trunk/COOLSNOWWOLF/default-settings ${HOME_PATH}/package/default-settings > /dev/null 2>&1
 fi
 
-export ZZZL_PATH="$(find "$GITHUB_WORKSPACE/openwrt/package" -type d -name "default-settings")"
-echo "ZZZL_PATH=${ZZZL_PATH}" >> $GITHUB_ENV
+export ZZZL_PATH="$(find ./package -type f -name "*default-settings" |grep files |cut -d '/' -f2-)"
+echo "ZZZL_PATH=${HOME_PATH}/${ZZZL_PATH}" >> $GITHUB_ENV
 }
 
 
