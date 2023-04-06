@@ -152,9 +152,8 @@ jobs:
         source ${BUILD_PATH}/common.sh && Diy_config
         
     - name: 编译信息
-      run: |
-        cd openwrt
-        source ${BUILD_PATH}/common.sh && Diy_xinxi
+      continue-on-error: true
+      run: source ${BUILD_PATH}/common.sh && Diy_xinxi
         
     - name: 缓存加速
       if: github.event.inputs.CACHEWRTBUILD_SWITCH == 'true'
