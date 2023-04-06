@@ -61,7 +61,6 @@ env:
   REPO_BRANCH: master
   FOLDER_NAME: build
   CONFIG_FILE: x86_64
-  DIY_PART_SH: 1806-luci.sh
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: false
   CACHEWRTBUILD_SWITCH: true
