@@ -29,10 +29,6 @@ on:
         description: '请输入[set-config]文件夹里的配置文件名称'
         required: true
         default: ''
-      DIY_PART_SH:
-        description: '请选择自定义文件名称'
-        required: true
-        default: ''
       UPLOAD_FIRMWARE:
         description: '上传固件到 Artifacts'
         required: false
