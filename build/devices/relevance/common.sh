@@ -54,8 +54,10 @@ GENERATE_PATH="${HOME_PATH}/package/base-files/files/bin/config_generate"
 IPADDR="$(grep "ipaddr:-" "${GENERATE_PATH}" |grep -v 'addr_offset' |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")"
 if [[ -n "${IPV4_IPADDR}" ]]; then
   if [[ -n "$(echo ${IPV4_IPADDR} |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" ]]; then
-    sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
-    echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
+    if [[ "${IPADDR}" != "${IPV4_IPADDR}" ]]; then
+      sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
+      echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
+    fi
   else
     echo "IP格式不正确，使用源码默认IP：${IPADDR}"
   fi
