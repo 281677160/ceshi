@@ -146,7 +146,7 @@ echo "FIRMWARE_PATH=${FIRMWARE_PATH}" >> ${GITHUB_ENV}
 }
 
 function Diy_armvirt() {
-if [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
+if [[ "${PACKAGING_FIRMWARE}" == "true" ]] && [[ `grep -c 'CONFIG_TARGET_armvirt_64_Default=y' ${HOME_PATH}/.config` -eq '1' ]]; then
   if [[ `ls -1 |grep -v "ipk" |grep -c ".tar.gz"` -eq '1' ]]; then
     echo "FIRMWARE=*rootfs.tar.gz" >> $GITHUB_ENV
     echo "DABAO_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
