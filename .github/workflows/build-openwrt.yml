@@ -82,6 +82,9 @@ jobs:
         echo "REPO_TOKEN=${{ secrets.REPO_TOKEN }}" >> $GITHUB_ENV
         if [[ -n "${{ inputs.REPO_URL }}" ]]; then
           export REPOS_URL="$(echo "${{ inputs.REPO_URL }}" |sed s/[[:space:]]//g)"
+          export SOURCE="$(echo "${REPOS_URL}" |cut -d"/" -f1)"
+          export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
+          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
           echo "FOLDER_NAME=${{ inputs.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "REPO_URL=https://github.com/${REPOS_URL}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
@@ -90,14 +93,14 @@ jobs:
           echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${{ inputs.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
           echo "PACKAGING_FIRMWARE=${{ inputs.PACKAGING_FIRMWARE }}" >> ${GITHUB_ENV}
-          export SOURCE="$(echo "${REPOS_URL}" |cut -d"/" -f1)"
-          export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
-          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
           echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
           echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
           echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
         else
-          export REPOS_URL="$(echo "${{ inputs.REPO_URL }}" |sed s/[[:space:]]//g)"
+          export REPOS_URL="$(echo "${{ env.REPO_URL }}" |sed s/[[:space:]]//g)"
+          export SOURCE="$(echo "${REPOS_URL}" |cut -d"/" -f1)"
+          export LUCI_VERSION="$(echo "${{ env.REPO_BRANCH }}" |cut -d"-" -f2-)"
+          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
           echo "FOLDER_NAME=${{ env.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "REPO_URL=https://github.com/${REPOS_URL}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ env.REPO_BRANCH }}" >> ${GITHUB_ENV}
@@ -106,9 +109,6 @@ jobs:
           echo "UPLOAD_RELEASE=${{ env.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
           echo "CACHEWRTBUILD_SWITCH=${{ env.CACHEWRTBUILD_SWITCH }}" >> ${GITHUB_ENV}
           echo "PACKAGING_FIRMWARE=${{ env.PACKAGING_FIRMWARE }}" >> ${GITHUB_ENV}
-          export SOURCE="$(echo "${REPOS_URL}" |cut -d"/" -f1)"
-          export LUCI_VERSION="$(echo "${{ env.REPO_BRANCH }}" |cut -d"-" -f2-)"
-          export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
           echo "SOURCE=${SOURCE}" >> $GITHUB_ENV
           echo "LUCI_VERSION=${LUCI_VERSION}" >> $GITHUB_ENV
           echo "DIY_WORK=${DIY_WORK}" >> $GITHUB_ENV
