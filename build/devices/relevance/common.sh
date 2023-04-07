@@ -165,7 +165,7 @@ fi
 
 function Packaged_services() {
 REPOS_ITORY="${GITHUB_WORKSPACE}/REPOSITORY"
-TRIGGER_PROGRAM="${REPOS_ITORY}/${FOLDER_NAME}/relevance"
+TRIGGER_PROGRAM="${REPOS_ITORY}/build/${FOLDER_NAME}/relevance"
 git clone -b main https://github.com/${GIT_REPOSITORY}.git ${REPOS_ITORY}
 
 [[ ! -d "${TRIGGER_PROGRAM}" ]] && mkdir -p "${TRIGGER_PROGRAM}"
@@ -173,7 +173,7 @@ git clone -b main https://github.com/${GIT_REPOSITORY}.git ${REPOS_ITORY}
 YML_PATH="${REPOS_ITORY}/.github/workflows/packaging.yml"
 cp -Rf ${GITHUB_WORKSPACE}/.github/workflows/packaging.yml ${YML_PATH}
 PATHS1="$(grep -A 5 'paths:' "${YML_PATH}" |sed 's/^[ ]*//g' |grep -v "^#" |grep -Eo "\- '.*'" |awk 'NR==1')"
-PATHS2="- '${FOLDER_NAME}/relevance/start'"
+PATHS2="- 'build/${FOLDER_NAME}/relevance/start'"
 SOURCE_NAME1="$(grep 'SOURCE:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
 SOURCE_NAME2="SOURCE: ${SOURCE}"
 FOLDER_NE1="$(grep 'FOLDER_NAME:' "${YML_PATH}"|sed 's/^[ ]*//g' |grep -v "^#" |awk 'NR==1')"
