@@ -1,23 +1,22 @@
 
 # Actions-OpenWrt
 
-## Credits
-
-- [Microsoft Azure](https://azure.microsoft.com)
-- [GitHub Actions](https://github.com/features/actions)
-- [OpenWrt](https://github.com/openwrt/openwrt)
-- [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)
-- [tmate](https://github.com/tmate-io/tmate)
-- [mxschmitt/action-tmate](https://github.com/mxschmitt/action-tmate)
-- [csexton/debugger-action](https://github.com/csexton/debugger-action)
-- [Cowtransfer](https://cowtransfer.com)
-- [WeTransfer](https://wetransfer.com/)
-- [Mikubill/transfer](https://github.com/Mikubill/transfer)
-- [softprops/action-gh-release](https://github.com/softprops/action-gh-release)
-- [ActionsRML/delete-workflow-runs](https://github.com/ActionsRML/delete-workflow-runs)
-- [dev-drprasad/delete-older-releases](https://github.com/dev-drprasad/delete-older-releases)
-- [peter-evans/repository-dispatch](https://github.com/peter-evans/repository-dispatch)
-
-## License
-
-[MIT](https://github.com/P3TERX/Actions-OpenWrt/blob/main/LICENSE) © [**P3TERX**](https://p3terx.com)
+ ### 鸣谢！
+ 感谢以下各位大佬（排名无分先后）<br />
+ 
+ [`coolsnowwolf`](https://github.com/coolsnowwolf/lede/tree/master)
+ [`Lienol`](https://github.com/Lienol/openwrt/tree/21.02)
+ [`immortalwrt`](https://github.com/immortalwrt/immortalwrt)
+ [`openwrt`](https://github.com/openwrt/openwrt)
+ [`x-wrt`](https://github.com/x-wrt/x-wrt)
+ [`P3TERX`](https://github.com/P3TERX/Actions-OpenWrt)
+ [`Hyy2001X`](https://github.com/Hyy2001X/AutoBuild-Actions)
+ [`dhxh`](https://github.com/dhxh/Openwrt-Build)
+ [`ophub`](https://github.com/ophub/amlogic-s9xxx-openwrt)
+ [`nicholas-opensource`](https://github.com/nicholas-opensource/OpenWrt-Autobuild)
+ [`hx210`](#/README.md)
+ [`hyird`](#/README.md)
+ [`World Peace`](#/README.md)
+ [`klever1988`](https://github.com/klever1988/cachewrtbuild)
+ [`actions`](https://github.com/actions/upload-artifact)
+ [`svenstaro`](https://github.com/svenstaro/upload-release-action)
