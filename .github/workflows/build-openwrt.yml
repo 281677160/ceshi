@@ -154,6 +154,7 @@ jobs:
     - name: 编译信息
       continue-on-error: true
       run: |
+        cd ${GITHUB_WORKSPACE}
         source ${BUILD_PATH}/common.sh && Diy_xinxi
         
     - name: 缓存加速
