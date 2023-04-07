@@ -212,10 +212,21 @@ git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
 
 function Diy_xinxi() {
+TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
+KERNEL_PATCH="$(grep "KERNEL_PATCHVER" "${HOME_PATH}/target/linux/${TARGET_BOARD}/Makefile" |grep -Eo "[0-9.]+")"
+KERNEL_CONFIG="kernel-${KERNEL_PATCH}"
+if [[ -f "${HOME_PATH}/include/${KERNEL_CONFIG}" ]]; then
+  LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/${KERNEL_CONFIG}" |sed s/[[:space:]]//g |cut -d '-' -f2 |cut -d '=' -f1)"
+  [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
+else
+  LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/kernel-version.mk" |grep -Eo "${KERNEL_PATCH}\.[0-9]+")"
+  [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
+fi
 echo
 echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
 echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
 echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
+echo -e "\033[32m 编译内核: ${LINUX_KERNEL} \033[0m"
 echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
 echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
 echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
