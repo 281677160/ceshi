@@ -85,9 +85,9 @@ jobs:
           export SOURCE="$(echo "${REPOS_URL}" |cut -d"/" -f1)"
           export LUCI_VERSION="$(echo "${{ inputs.REPO_BRANCH }}" |cut -d"-" -f2-)"
           export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
-          echo "FOLDER_NAME=${{ inputs.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "REPO_URL=https://github.com/${REPOS_URL}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ inputs.REPO_BRANCH }}" >> ${GITHUB_ENV}
+          echo "FOLDER_NAME=${{ inputs.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "CONFIG_FILE=set-config/${{ inputs.CONFIG_FILE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_FIRMWARE=${{ inputs.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ inputs.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
@@ -101,9 +101,9 @@ jobs:
           export SOURCE="$(echo "${REPOS_URL}" |cut -d"/" -f1)"
           export LUCI_VERSION="$(echo "${{ env.REPO_BRANCH }}" |cut -d"-" -f2-)"
           export DIY_WORK="${SOURCE}$(echo "${LUCI_VERSION}" |tr -d '\`.`')"
-          echo "FOLDER_NAME=${{ env.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "REPO_URL=https://github.com/${REPOS_URL}" >> ${GITHUB_ENV}
           echo "REPO_BRANCH=${{ env.REPO_BRANCH }}" >> ${GITHUB_ENV}
+          echo "FOLDER_NAME=${{ env.FOLDER_NAME }}" >> ${GITHUB_ENV}
           echo "CONFIG_FILE=set-config/${{ env.CONFIG_FILE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_FIRMWARE=${{ env.UPLOAD_FIRMWARE }}" >> ${GITHUB_ENV}
           echo "UPLOAD_RELEASE=${{ env.UPLOAD_RELEASE }}" >> ${GITHUB_ENV}
