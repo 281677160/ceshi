@@ -196,7 +196,7 @@ jobs:
       if: steps.compile.outcome == 'success'&& env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       uses: actions/upload-artifact@main
       with:
-        name: ${{ env.SOURCE }}-${{ env.LUCI_VERSION }}-${{ env.TARGET_PROFILE }}-${{ env.FILE_DATE }}-firmware
+        name: ${{ env.FILE_NAME }}-${{ env.FILE_DATE }}-firmware
         path: ${{ env.FIRMWARE_PATH }}
 
     - name: 发布固件到release
