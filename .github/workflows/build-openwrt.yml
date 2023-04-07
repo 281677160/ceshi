@@ -77,7 +77,6 @@ jobs:
       
     - name: 读取变量
       run: |
-        
         echo "GIT_REPOSITORY=${{github.repository}}" >> $GITHUB_ENV
         echo "REPO_TOKEN=${{ secrets.REPO_TOKEN }}" >> $GITHUB_ENV
         if [[ -n "${{ inputs.REPO_URL }}" ]]; then
