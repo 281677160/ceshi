@@ -212,6 +212,7 @@ git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 }
 
 function Diy_xinxi() {
+CPU_MODEL="$(cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g')"
 TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 KERNEL_PATCH="$(grep "KERNEL_PATCHVER" "${HOME_PATH}/target/linux/${TARGET_BOARD}/Makefile" |grep -Eo "[0-9.]+")"
 KERNEL_CONFIG="kernel-${KERNEL_PATCH}"
@@ -225,12 +226,15 @@ fi
 echo
 echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
 echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
-echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
-echo -e "\033[32m 编译内核: ${LINUX_KERNEL} \033[0m"
 echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
 echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
 echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
-echo "1"
+echo
+echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
+echo -e "\033[32m 编译内核: ${LINUX_KERNEL} \033[0m"
+echo
+echo -e "\033[35m 服务器CPU: ${CPU_MODEL} \033[0m"
+echo
 if [[ "${UPLOAD_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m 上传固件在github actions: 开启 \033[0m"
 else
