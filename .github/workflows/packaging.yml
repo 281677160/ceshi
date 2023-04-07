@@ -49,13 +49,13 @@ on:
     branches:
       - main
     paths:
-      - 'build/relevance/start'
+      - 'build/devices/relevance/start'
 
 env:
   GIT_REPOSITORY: ${{github.repository}}
   REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
   SOURCE: coolsnowwolf
-  FOLDER_NAME: build
+  FOLDER_NAME: devices
 
 jobs:
   build:
