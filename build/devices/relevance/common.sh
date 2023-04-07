@@ -224,7 +224,6 @@ else
   [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
 fi
 echo
-echo
 echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
 echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
 echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
@@ -265,6 +264,5 @@ echo -e "\033[34m auto_kernel: ${auto_kernel} \033[0m"
 echo -e "\033[34m rootfs_size: ${rootfs_size} \033[0m"
 echo -e "\033[34m kernel_repo: ${kernel_repo} \033[0m"
 fi
-echo
 echo
 }
