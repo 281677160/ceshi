@@ -213,20 +213,6 @@ git push --force "https://${REPO_TOKEN}@github.com/${GIT_REPOSITORY}" HEAD:main
 
 function Diy_xinxi() {
 echo "1"
-cpu_model=`cat /proc/cpuinfo  |grep 'model name' |gawk -F : '{print $2}' | uniq -c  | sed 's/^ \+[0-9]\+ //g'`
-clear
-echo "2"
-
-echo
-echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
-echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
-echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
-echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
-echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
-echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
-echo "3"
-echo -e "\033[34m 服务器CPU: ${cpu_model} \033[0m"
-echo
 if [[ "${UPLOAD_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m 上传固件在github actions: 开启 \033[0m"
 else
