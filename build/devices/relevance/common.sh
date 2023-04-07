@@ -257,8 +257,8 @@ else
 fi
 echo -e "\033[33m 清理[X]天之前的Artifacts: ${RETAIN_DAYS}天 \033[0m"
 echo -e "\033[33m 保留[X]个Releases不被删除: ${KEEP_LATEST}个 \033[0m"
-echo
 if [[ "${PACKAGING_FIRMWARE}" == "true" ]] && [[ "${TARGET_PROFILE}" == "Armvirt_64" ]]; then
+echo
 echo -e "\033[34m amlogic_model: ${amlogic_model} \033[0m"
 echo -e "\033[34m amlogic_kernel: ${amlogic_kernel} \033[0m"
 echo -e "\033[34m auto_kernel: ${auto_kernel} \033[0m"
