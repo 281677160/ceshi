@@ -217,7 +217,7 @@ TARGET_BOARD="$(awk -F '[="]+' '/TARGET_BOARD/{print $2}' ${HOME_PATH}/.config)"
 KERNEL_PATCH="$(grep "KERNEL_PATCHVER" "${HOME_PATH}/target/linux/${TARGET_BOARD}/Makefile" |grep -Eo "[0-9.]+")"
 KERNEL_CONFIG="kernel-${KERNEL_PATCH}"
 if [[ -f "${HOME_PATH}/include/${KERNEL_CONFIG}" ]]; then
-  LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/${KERNEL_CONFIG}" |sed s/[[:space:]]//g |cut -d '-' -f2 |cut -d '=' -f1)"
+  LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/${KERNEL_CONFIG}" |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
   [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
 else
   LINUX_KERNEL="$(grep "LINUX_KERNEL_HASH" "${HOME_PATH}/include/kernel-version.mk" |grep -Eo "${KERNEL_PATCH}\.[0-9]+")"
