@@ -216,22 +216,22 @@ echo "1"
 if [[ "${UPLOAD_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m 上传固件在github actions: 开启 \033[0m"
 else
-  echo -e "\033[33m 上传固件在github actions: 关闭 \033[0m"
+  echo -e "\033[31m 上传固件在github actions: 关闭 \033[0m"
 fi
 if [[ "${UPLOAD_RELEAS}" == "true" ]]; then
   echo -e "\033[33m 发布固件(Releases): 开启 \033[0m"
 else
-  echo -e "\033[33m 发布固件(Releases): 关闭 \033[0m"
+  echo -e "\033[31m 发布固件(Releases): 关闭 \033[0m"
 fi
 if [[ "${CACHEWRTBUILD_SWITCH}" == "true" ]]; then
   echo -e "\033[33m 是否开启缓存加速: 开启 \033[0m"
 else
-  echo -e "\033[33m 是否开启缓存加速: 关闭 \033[0m"
+  echo -e "\033[31m 是否开启缓存加速: 关闭 \033[0m"
 fi
 if [[ "${PACKAGING_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m Armvirt_64自动打包成img固件: 开启 \033[0m"
 else
-  echo -e "\033[33m Armvirt_64自动打包成img固件: 关闭 \033[0m"
+  echo -e "\033[31m Armvirt_64自动打包成img固件: 关闭 \033[0m"
 fi
 echo
 echo
