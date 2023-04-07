@@ -72,14 +72,14 @@ if [[ -n "${RETAIN_DAYS}" ]]; then
   echo "RETAIN_DAYS=${RETAIN_DAYS}" >> ${GITHUB_ENV}
   echo "清除${RETAIN_DAYS}天前的Artifacts记录"
 else
-  echo "RETAIN_DAYS=30" >> ${GITHUB_ENV}
+  echo "RETAIN_DAYS=90" >> ${GITHUB_ENV}
 fi
 
 if [[ -n "${KEEP_LATEST}" ]]; then
   echo "KEEP_LATEST=${KEEP_LATEST}" >> ${GITHUB_ENV}
   echo "保留${KEEP_LATEST}个Releases不被清理"
 else
-  echo "KEEP_LATEST=90" >> ${GITHUB_ENV}
+  echo "KEEP_LATEST=199" >> ${GITHUB_ENV}
 fi
 
 if [[ "${DIY_PART_SH}" == "diy-luci2.sh" ]]; then
@@ -224,12 +224,12 @@ else
   [[ -z ${LINUX_KERNEL} ]] && LINUX_KERNEL="nono"
 fi
 echo
+echo
 echo -e "\033[32m 源码链接: ${REPO_URL} \033[0m"
 echo -e "\033[32m 源码分支: ${REPO_BRANCH} \033[0m"
 echo -e "\033[32m 应用文件: ${FOLDER_NAME} \033[0m"
-echo -e "\033[32m 配置文件: ${CONFIG_FILE} \033[0m"
+echo -e "\033[32m 配置文件: $(echo "${CONFIG_FILE}" |cut -d"/" -f2) \033[0m"
 echo -e "\033[32m 扩展文件: ${DIY_PART_SH} \033[0m"
-echo
 echo -e "\033[32m 编译机型: ${TARGET_PROFILE} \033[0m"
 echo -e "\033[32m 编译内核: ${LINUX_KERNEL} \033[0m"
 echo
@@ -255,6 +255,8 @@ if [[ "${PACKAGING_FIRMWARE}" == "true" ]]; then
 else
   echo -e "\033[31m Armvirt_64自动打包成img固件: 关闭 \033[0m"
 fi
+echo -e "\033[31m 清理[X]天之前的Artifacts: ${RETAIN_DAYS}天 \033[0m"
+echo -e "\033[31m 保留[X]个Releases不被删除: ${KEEP_LATEST}个 \033[0m"
 echo
 echo
 }
