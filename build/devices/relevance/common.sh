@@ -255,8 +255,8 @@ if [[ "${PACKAGING_FIRMWARE}" == "true" ]]; then
 else
   echo -e "\033[31m Armvirt_64自动打包成img固件: 关闭 \033[0m"
 fi
-echo -e "\033[31m 清理[X]天之前的Artifacts: ${RETAIN_DAYS}天 \033[0m"
-echo -e "\033[31m 保留[X]个Releases不被删除: ${KEEP_LATEST}个 \033[0m"
+echo -e "\033[33m 清理[X]天之前的Artifacts: ${RETAIN_DAYS}天 \033[0m"
+echo -e "\033[33m 保留[X]个Releases不被删除: ${KEEP_LATEST}个 \033[0m"
 echo
 echo
 }
