@@ -35,6 +35,10 @@ elif [[ ! -d "${settingss}" ]] && [[ "${applica}" == "2" ]]; then
   svn export https://github.com/281677160/common/trunk/COOLSNOWWOLF/default-settings ${HOME_PATH}/package/default-settings > /dev/null 2>&1
 fi
 
+if [[ "${REPO_URL}" == "https://github.com/openwrt/openwrt" ]] && [[ "${REPO_BRANCH}" == "openwrt-19.07" ]]; then
+  sed -i "s/+luci-lib-base //g" ${HOME_PATH}/package/default-settings/Makefile
+fi
+
 export ZZZL_PATH="$(find ./package -type f -name "*default-settings" |grep files |cut -d '/' -f2-)"
 echo "ZZZ_PATH=${HOME_PATH}/${ZZZL_PATH}" >> $GITHUB_ENV
 }
