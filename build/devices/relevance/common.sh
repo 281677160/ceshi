@@ -258,9 +258,9 @@ echo
 echo -e "\033[35m 服务器CPU: ${CPU_MODEL} \033[0m"
 echo
 if [[ "${UPLOAD_FIRMWARE}" == "true" ]]; then
-  echo -e "\033[33m 上传固件在github actions: 开启 \033[0m"
+  echo -e "\033[33m 上传固件在Artifacts: 开启 \033[0m"
 else
-  echo -e "\033[31m 上传固件在github actions: 关闭 \033[0m"
+  echo -e "\033[31m 上传固件在Artifacts: 关闭 \033[0m"
 fi
 if [[ "${UPLOAD_RELEAS}" == "true" ]]; then
   echo -e "\033[33m 发布固件(Releases): 开启 \033[0m"
