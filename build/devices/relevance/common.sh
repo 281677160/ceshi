@@ -35,7 +35,7 @@ elif [[ ! -d "${settingss}" ]] && [[ "${applica}" == "2" ]]; then
   svn export https://github.com/281677160/common/trunk/COOLSNOWWOLF/default-settings ${HOME_PATH}/package/default-settings > /dev/null 2>&1
 fi
 
-if [[ "${REPO_URL}" == "https://github.com/openwrt/openwrt" ]] && [[ "${REPO_BRANCH}" == "openwrt-19.07" ]]; then
+if [[ -f "${HOME_PATH}/feeds/luci/applications/luci-app-ttyd/luasrc/controller/ttyd.lua" ]]; then
   sed -i "s/+luci-lib-base //g" ${HOME_PATH}/package/default-settings/Makefile
 fi
 
