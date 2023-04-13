@@ -20,7 +20,7 @@ if [[ -d "${HOME_PATH}/extra" ]]; then
 else
   apptions="$(find "${HOME_PATH}/feeds" -type d -name "applications"  |grep 'luci')"
 fi
-if [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -gt '15' ]]; then
+if [[ `find "${apptions}" -type d -name "zh_Hans" |grep -c "zh_Hans"` -gt '20' ]]; then
   applica="1"
   echo "DIY_PART_SH=diy-luci2.sh" >> ${GITHUB_ENV}
 else
