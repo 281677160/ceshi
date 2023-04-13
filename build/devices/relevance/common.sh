@@ -60,28 +60,31 @@ if [[ -n "${IPV4_IPADDR}" ]]; then
   if [[ -n "$(echo ${IPV4_IPADDR} |grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")" ]]; then
     if [[ "${IPADDR}" != "${IPV4_IPADDR}" ]]; then
       sed -i "s/${IPADDR}/${IPV4_IPADDR}/g" "${GENERATE_PATH}"
-      echo "后台IP修改成功,当前IP：${IPV4_IPADDR}"
+      echo "IPV4_IPADDR=${IPV4_IPADDR}" >> ${GITHUB_ENV}
+    else
+      echo "IPV4_IPADDR=${IPADDR}" >> ${GITHUB_ENV}
     fi
   else
-    echo "IP格式不正确，使用源码默认IP：${IPADDR}"
+    echo "${IPADDR}"
+    echo "IPV4_IPADDR=${IPADDR}" >> ${GITHUB_ENV}
   fi
 fi
 
 if [[ "${DELETE_LOGIN_PASSWORD}" == "1" ]] && [[ -f "${ZZZ_PATH}" ]]; then
   sed -i '/CYXluq4wUazHjmCDBCqXF/d' "${ZZZ_PATH}"
-  echo "清除登录密码完成"
+  echo "DELETE_LOGIN_PASSWORD=1" >> ${GITHUB_ENV}
+else
+  echo "DELETE_LOGIN_PASSWORD=0" >> ${GITHUB_ENV}
 fi
 
 if [[ -n "${RETAIN_DAYS}" ]]; then
   echo "RETAIN_DAYS=${RETAIN_DAYS}" >> ${GITHUB_ENV}
-  echo "清除${RETAIN_DAYS}天前的Artifacts记录"
 else
   echo "RETAIN_DAYS=90" >> ${GITHUB_ENV}
 fi
 
 if [[ -n "${KEEP_LATEST}" ]]; then
   echo "KEEP_LATEST=${KEEP_LATEST}" >> ${GITHUB_ENV}
-  echo "保留${KEEP_LATEST}个Releases不被清理"
 else
   echo "KEEP_LATEST=199" >> ${GITHUB_ENV}
 fi
@@ -91,7 +94,11 @@ if [[ "${DIY_PART_SH}" == "diy-luci2.sh" ]]; then
   /bin/bash ${HOME_PATH}/zh_Hans.sh
 fi
 
-echo "DEFAULT_CHINESE_LANGUAGE=${DEFAULT_CHINESE_LANGUAGE}" >> $GITHUB_ENV
+if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
+  echo "DEFAULT_CHINESE_LANGUAGE=1" >> $GITHUB_ENV
+else
+  echo "DEFAULT_CHINESE_LANGUAGE=0" >> $GITHUB_ENV
+fi
 
 if [[ -n "${amlogic_model}" ]]; then
   echo "amlogic_model=${amlogic_model}" >> ${GITHUB_ENV}
@@ -269,6 +276,18 @@ if [[ "${PACKAGING_FIRMWARE}" == "true" ]]; then
   echo -e "\033[33m Armvirt_64自动打包成img固件: 开启 \033[0m"
 else
   echo -e "\033[31m Armvirt_64自动打包成img固件: 关闭 \033[0m"
+fi
+echo
+echo -e "\033[33m 后台IP：${IPV4_IPADDR} \033[0m"
+if [[ "${DELETE_LOGIN_PASSWORD}" == "1" ]]; then
+  echo -e "\033[33m 首次进入固件免密登录设置: 开启 \033[0m"
+else
+  echo -e "\033[31m 首次进入固件免密登录设置: 关闭 \033[0m"
+fi
+if [[ "${DEFAULT_CHINESE_LANGUAGE}" == "1" ]]; then
+  echo -e "\033[33m 编译时改成默认中文LUCI: 开启 \033[0m"
+else
+  echo -e "\033[31m 编译时改成默认中文LUCI: 关闭 \033[0m"
 fi
 echo -e "\033[33m 清理[X]天之前的Artifacts: ${RETAIN_DAYS}天 \033[0m"
 echo -e "\033[33m 保留[X]个Releases不被删除: ${KEEP_LATEST}个 \033[0m"
