@@ -9,3 +9,6 @@
 # File name: diy-part1.sh
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 #
+git clone https://github.com/fw876/helloworld package/luci-app-ssr-plus
+git clone https://github.com/xiaorouji/openwrt-passwall package/luci-app-passwall
+git clone https://github.com/xiaorouji/openwrt-passwall-packages package/papackages
