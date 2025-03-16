@@ -11,7 +11,7 @@
 name: Lede-openwrt
 
 on:
-  repository_dispatch:
+  workflow_dispatch:
 
 env:
   REPO_URL: https://github.com/x-wrt/x-wrt
