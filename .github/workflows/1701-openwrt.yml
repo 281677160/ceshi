@@ -15,12 +15,9 @@ env:
   REPO_BRANCH: master
 
 jobs:
-
-  build_openwrt:
-
-    name: Build OpenWrt Firmware
-
+  build:
     runs-on: ubuntu-22.04
+    name: Lede-openwrt
 
     steps:
       - name: Checkout OpenWrt
