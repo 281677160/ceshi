@@ -20,7 +20,7 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/openwrt
+  REPO_URL: https://github.com/x-wrt/x-wrt
   REPO_BRANCH: lede-17.01
   FEEDS_CONF: 1701/feeds.conf.default
   CONFIG_FILE: 1701/.config
