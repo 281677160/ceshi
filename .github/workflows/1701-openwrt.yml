@@ -65,19 +65,18 @@ jobs:
       - name: Install feeds
         run: cd openwrt/ && ./scripts/feeds install -a
 
-      - name: Generate configuration file
+      - name: Download package
+        id: package
         run: |
-          cd openwrt
+          cd openwrt/
           make defconfig
-
-      - name: Download packages
-        run: |
-          cd openwrt
-          make download -j16
+          make download -j8
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
 
       - name: Compile firmware
         run: |
-          cd openwrt
+          cd openwrt/
           make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
@@ -90,7 +89,7 @@ jobs:
 
       - name: Prepare artifact
         run: |
-          cd openwrt
+          cd openwrt/
           mkdir -p ./artifact/package
           mkdir -p ./artifact/buildinfo
           rm -rf $(find ./bin/targets/ -type d -name "packages")
