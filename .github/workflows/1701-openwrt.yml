@@ -10,8 +10,9 @@ name: OpenWrt-CI
 on:
   workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  REPO_URL: https://github.com/x-wrt/x-wrt
+  REPO_BRANCH: master
 
 jobs:
 
@@ -58,7 +59,7 @@ jobs:
         working-directory: /workdir
         run: |
           df -hT $PWD
-          git clone https://github.com/x-wrt/x-wrt -b master openwrt
+          git clone -q --single-branch --depth=1 --branch=${REPO_BRANCH} ${REPO_URL} openwrt
           ln -sf /workdir/openwrt ${GITHUB_WORKSPACE}/openwrt
 
       - name: Update feeds
